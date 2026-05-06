@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Dev Notes</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>AI Dev Notes</h1>
+    <input id="search" type="text" placeholder="Search notes..." autocomplete="off" />
+  </header>
+
+  <main>
+    <p id="count"></p>
+    <div id="gallery"></div>
+    <p id="empty-state" class="hidden">No notes match your search.</p>
+  </main>
+
+  <div id="modal-overlay" class="hidden" role="dialog" aria-modal="true">
+    <div id="modal">
+      <div id="modal-header">
+        <h2 id="modal-title"></h2>
+        <button id="modal-close" aria-label="Close">✕</button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
