@@ -4,28 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Dev Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <header>
-    <h1>AI Dev Notes</h1>
-    <input id="search" type="text" placeholder="Search notes..." autocomplete="off" />
+  <header class="site-header">
+    <div class="header-inner">
+      <h1 class="site-title">AI Dev Notes</h1>
+      <p class="site-subtitle">Strange issues, situational fixes, and hard-won lessons.</p>
+      <div class="search-wrapper">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="search" placeholder="Search notes…" autocomplete="off" />
+      </div>
+    </div>
   </header>
 
   <main>
-    <p id="count"></p>
-    <div id="gallery"></div>
-    <p id="empty-state" class="hidden">No notes match your search.</p>
+    <p id="count" class="count"></p>
+    <div id="gallery" class="gallery"></div>
+    <div id="empty-state" class="empty-state hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <p>No notes match your search.</p>
+    </div>
   </main>
 
-  <div id="modal-overlay" class="hidden" role="dialog" aria-modal="true">
-    <div id="modal">
-      <div id="modal-header">
-        <h2 id="modal-title"></h2>
-        <button id="modal-close" aria-label="Close">✕</button>
+  <!-- Modal -->
+  <div id="modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div id="modal" class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title" class="modal-title"></h2>
+        <button id="modal-close" class="modal-close" aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
       </div>
-      <div id="modal-body"></div>
+      <div id="modal-body" class="modal-body"></div>
     </div>
   </div>
 
