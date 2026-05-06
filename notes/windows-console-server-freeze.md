@@ -1,6 +1,3 @@
-Here is the markdown document — save it wherever suits you (e.g. `plans/windows-console-server-freeze.md`):
-
-```markdown
 # Windows Console QuickEdit — Server Freeze on Multi-Client Access
 
 ## Summary
@@ -95,6 +92,7 @@ public static class QuickEditDisabler {
 ```
 
 Equivalent in **cmd.exe / batch** (reg key, requires restart):
+
 ```batch
 reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f
 ```
