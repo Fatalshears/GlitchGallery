@@ -1,5 +1,11 @@
 [
   {
+    "filename": "claude-code-model-access-litellm.md",
+    "title": "Claude Code Model Access Litellm",
+    "date": "2026-05-08",
+    "preview": "# Why Claude Code + LiteLLM Gateway: Vertex Mode Fails, Anthropic Mode Works\n\n## Setup Context\n\nA LiteLLM proxy runs on the intranet, acting as a gateway that routes AI API calls to a backend model farm. Claude Code on a client machine connects to it over LAN.\n\n---\n\n## Configuration A — Vertex Mode (does NOT work)\n\n```sh\nANTHROPIC_API_KEY=<virtual-key>\nANTHROPIC_VERTEX_BASE_URL=http://<proxy-host>:4000\nCLAUDE_CODE_USE_VERTEX=1\nCLOUD_ML_REGION=_\nANTHROPIC_VERTEX_PROJECT_ID=_\nCLAUDE_CODE_SKIP_VERTEX_AUTH=1\n```\n\n### Why it fails\n\n#### Problem 1 — Client-side model registry validation (root cause)\n\nWhen `CLAUDE_CODE_USE_VERTEX=1` is set, Claude Code switches into Vertex AI mode. In this mode it maintains a **hardcoded internal list** of valid Vertex model identifiers (e.g. `claude-sonnet-4-5@2"
+  },
+  {
     "filename": "windows-console-server-freeze.md",
     "title": "Windows Console Server Freeze",
     "date": "2026-05-06",
