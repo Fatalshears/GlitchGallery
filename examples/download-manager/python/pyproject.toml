@@ -1,0 +1,13 @@
+[project]
+name = "minidm"
+version = "0.1.0"
+description = "Reference segmented, resumable HTTP downloader for the GlitchGallery wiki"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,4 +1,9 @@
-# Why Claude Code Vertex Mode Fails Through LiteLLM but Anthropic Mode Works
+---
+title: "Claude Code Vertex Mode Fails Through LiteLLM"
+type: field-note
+tags: [field-note, llm-gateway, proxy, troubleshooting]
+created: 2026-05-08
+---
 
 ## Setup Context
 

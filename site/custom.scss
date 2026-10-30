@@ -1,0 +1,105 @@
+@use "./base.scss";
+
+// ── Reading comfort ──
+// Long-form technical reading: generous line height, moderate measure,
+// no pure black/white anywhere (Everforest tokens come from quartz.config.ts).
+
+article {
+  line-height: 1.72;
+  font-size: 1.04rem;
+
+  p,
+  li {
+    max-width: 72ch;
+  }
+
+  h2 {
+    margin-top: 2.4rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--lightgray);
+  }
+
+  table {
+    font-size: 0.95rem;
+  }
+
+  img {
+    border-radius: 6px;
+  }
+}
+
+pre > code,
+code {
+  font-size: 0.88em;
+}
+
+// Mermaid diagrams: framed, centred, scrollable on small screens.
+.mermaid,
+pre:has(> code.mermaid) {
+  background: var(--highlight);
+  border: 1px solid var(--lightgray);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  text-align: center;
+}
+
+// Mermaid's built-in dark theme fills nodes near-black; use Everforest bg1 instead.
+:root[saved-theme="dark"] .mermaid :is(.node rect, .node polygon, .node circle, .node path) {
+  fill: #343f44 !important;
+}
+
+// ── Custom callouts ──
+// Code examples carry one of three labels so readers know how far to trust them:
+//   > [!pseudocode]  conceptual, not runnable
+//   > [!mwe]         minimal working example, runs as shown
+//   > [!tested]      tested reference implementation (CI-verified in /examples)
+// Competency checkpoints:
+//   > [!level1] Recognition   > [!level2] Implementation   > [!level3] Engineering
+
+$icon-code: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>');
+$icon-idea: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"></path></svg>');
+$icon-check: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>');
+$icon-step: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h4v-4h4v-4h4V8h4V4h4"></path></svg>');
+
+@mixin callout-color($color) {
+  --color: #{$color};
+  --border: #{$color}55;
+  --bg: #{$color}12;
+}
+
+.callout {
+  &[data-callout="pseudocode"] {
+    @include callout-color(#939f91);
+    --callout-icon: #{$icon-idea};
+  }
+  &[data-callout="mwe"] {
+    @include callout-color(#3a94c5);
+    --callout-icon: #{$icon-code};
+  }
+  &[data-callout="tested"] {
+    @include callout-color(#35a77c);
+    --callout-icon: #{$icon-check};
+  }
+  &[data-callout="level1"] {
+    @include callout-color(#8da101);
+    --callout-icon: #{$icon-step};
+  }
+  &[data-callout="level2"] {
+    @include callout-color(#dfa000);
+    --callout-icon: #{$icon-step};
+  }
+  &[data-callout="level3"] {
+    @include callout-color(#f57d26);
+    --callout-icon: #{$icon-step};
+  }
+}
+
+// Slightly softer default callout palette for Everforest.
+.callout[data-callout="warning"] {
+  @include callout-color(#dfa000);
+}
+.callout[data-callout="danger"],
+.callout[data-callout="bug"] {
+  @include callout-color(#e67e80);
+}
