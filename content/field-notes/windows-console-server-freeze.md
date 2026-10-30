@@ -1,4 +1,9 @@
-# Windows Console QuickEdit — Server Freeze on Multi-Client Access
+---
+title: "Windows Console QuickEdit Freezes Servers"
+type: field-note
+tags: [field-note, windows, concurrency, logging, troubleshooting]
+created: 2026-05-06
+---
 
 ## Summary
 
