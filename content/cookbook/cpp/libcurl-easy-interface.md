@@ -14,6 +14,10 @@ C++ has no standard HTTP client; **libcurl** is the de-facto choice (also used i
 
 ## Install and build
 
+- **Used for:** Installing libcurl's development headers and compiling a C++ program against it.
+- **Input:** Your source file `main.cpp`; pick the install line for your OS.
+- **Expected output:** An executable `./main`; a missing header shows up as `curl/curl.h: No such file or directory`, a missing library as `undefined reference to curl_easy_init`.
+
 ```bash
 sudo apt install libcurl4-openssl-dev          # Debian/Ubuntu
 brew install curl                              # macOS (system curl also ships headers in the SDK)
@@ -41,6 +45,10 @@ CMake: `find_package(CURL REQUIRED)` and `target_link_libraries(app PRIVATE CURL
 ## Recipes
 
 > [!mwe] Fetch a byte range into a std::string
+> - **Used for:** The smallest complete libcurl program: fetch the first 100 bytes of a file.
+> - **Input:** The hard-coded URL and range `0-99`.
+> - **Expected output:** One line: `No error HTTP 206 bytes=100`. A server without range support prints `HTTP 200` and the full size.
+>
 > ```cpp
 > #include <curl/curl.h>
 > #include <iostream>

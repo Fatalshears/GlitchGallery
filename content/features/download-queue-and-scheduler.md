@@ -37,6 +37,10 @@ flowchart LR
 ```
 
 > [!pseudocode] Dispatcher
+> - **Used for:** Deciding which queued downloads start whenever something changes.
+> - **Input:** The queue, running tasks, per-host counters, the limits and the schedule window.
+> - **Expected output:** Zero or more tasks started, never exceeding the global or per-host limits.
+>
 > ```
 > on any event (task added, task ended, timer tick):
 >     while running.count < MAX_ACTIVE and window_open(now):
@@ -64,6 +68,10 @@ flowchart LR
 - **Schedules:** compare `datetime.now()` against window start/end each minute; for cron-like rules use `croniter` (Python) or `cron-parser` (Node).
 
 > [!mwe] Global + per-host limits with asyncio (Python 3.11+)
+> - **Used for:** Enforcing a global limit and a per-host limit on concurrent downloads.
+> - **Input:** Five fake tasks: four for `a.example`, one for `b.example`; each takes 1 s.
+> - **Expected output:** `start` lines for `a.example/0`, `a.example/1` and `b.example/x` at once, then `a.example/2` and `a.example/3` after the first two finish; never more than 3 tasks running, never more than 2 for `a.example`. Finishes in about 2 s.
+>
 > ```python
 > import asyncio
 > from collections import defaultdict
@@ -74,7 +82,8 @@ flowchart LR
 > per_host = defaultdict(lambda: asyncio.Semaphore(MAX_PER_HOST))
 >
 > async def run_task(url: str) -> None:
->     async with active, per_host[urlsplit(url).hostname]:
+>     # Take the per-host slot first: waiting for a busy host must not hold a global slot.
+>     async with per_host[urlsplit(url).hostname], active:
 >         print("start", url); await asyncio.sleep(1); print("done ", url)
 >
 > async def main(urls: list[str]) -> None:

@@ -69,6 +69,10 @@ Call `SetConsoleMode` via Win32 P/Invoke before starting the server processes.
 This is the most reliable fix: it prevents the freeze regardless of how the
 server writes logs.
 
+- **Used for:** Turning off QuickEdit for the current console window so a mouse click cannot freeze the server.
+- **Input:** None; run it at the top of the PowerShell launcher before starting the server.
+- **Expected output:** `Console QuickEdit disabled.` in green, or a yellow warning with the reason if the console mode could not be changed.
+
 ```powershell
 # Disable QuickEdit mode — prevents mouse clicks from pausing console output.
 # Safe to add to any start.ps1 / launcher script.
@@ -98,6 +102,10 @@ public static class QuickEditDisabler {
 
 Equivalent in **cmd.exe / batch** (reg key, requires restart):
 
+- **Used for:** Disabling QuickEdit for all new console windows of the current user.
+- **Input:** None.
+- **Expected output:** `The operation completed successfully.`; takes effect for consoles opened afterwards.
+
 ```batch
 reg add "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f
 ```
@@ -111,6 +119,10 @@ block the thread that drives client I/O. Route all log output through an
 async-safe queue that drains on a dedicated background thread.
 
 #### Python (`logging` standard library)
+
+- **Used for:** Moving console log writes off the request-handling thread.
+- **Input:** None; run once at process start, then log with `logging.getLogger(...)` as usual.
+- **Expected output:** Log lines appear on stderr as before, but are written by a background `QueueListener` thread, so a blocked console write no longer stalls request handling. Call `_log_listener.stop()` at shutdown to flush.
 
 ```python
 import logging
@@ -137,6 +149,10 @@ a console write.
 
 #### Node.js (Winston example)
 
+- **Used for:** Using a logger object instead of scattered `console.log()` calls in Node.js.
+- **Input:** None; then `logger.info("...")` in your code.
+- **Expected output:** Log lines on the console. Note: the Console transport still writes to the same console, so pair this with Fix 1 or Fix 3 to fully avoid the freeze.
+
 ```js
 const { createLogger, transports } = require('winston');
 // winston's File/Console transports write in a background stream — safe by default.
@@ -145,6 +161,10 @@ const logger = createLogger({ transports: [new transports.Console()] });
 ```
 
 #### Go
+
+- **Used for:** Creating a structured logger in Go.
+- **Input:** None; then `logger.Info("...")`.
+- **Expected output:** JSON log lines on stderr. Note: zap writes synchronously by default; for truly asynchronous writes wrap the output in `zapcore.BufferedWriteSyncer`, or combine with Fix 1/Fix 3.
 
 ```go
 // Use a buffered writer or a logging library (zap, zerolog) that
@@ -159,6 +179,10 @@ logger, _ := zap.NewProduction()  // zap is async-safe
 
 Start the server with output redirected to a file or pipe. The process no
 longer holds a console handle and QuickEdit cannot affect it.
+
+- **Used for:** Starting the server with no console attached to its output.
+- **Input:** `$Python` set to the Python executable; a `logs` directory.
+- **Expected output:** A process object (from `-PassThru`); output goes to `logs\uvicorn.log` and errors to `logs\uvicorn.err` instead of the console.
 
 ```powershell
 # PowerShell: redirect both streams to a log file

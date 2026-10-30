@@ -68,6 +68,10 @@ sequenceDiagram
 > Returns the strong ETag, else `Last-Modified`, never a weak ETag. Covered by `test_weak_etag_is_not_used_for_if_range` and `test_changed_remote_file_restarts_from_scratch`.
 
 > [!mwe] Observe a 304 with curl
+> - **Used for:** Seeing a conditional request in action: the server confirms your cached copy is still current.
+> - **Input:** A URL whose server sends an `ETag` (example.com does).
+> - **Expected output:** `304` — the server sent no body because the ETag still matches. If the server sends no ETag, you get `200` instead.
+>
 > ```bash
 > etag=$(curl -sI https://example.com/ | awk -F': ' 'tolower($1)=="etag"{print $2}' | tr -d '\r')
 > curl -s -o /dev/null -w '%{http_code}\n' -H "If-None-Match: $etag" https://example.com/

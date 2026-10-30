@@ -74,6 +74,10 @@ HTTP request/response structure, status codes, headers (MDN *An overview of HTTP
 Serving ranges: most static servers (NGINX, Apache, Caddy, S3, CDNs) do it automatically for static files. Frameworks: Starlette `FileResponse`, Express `res.sendFile`, Go `http.ServeContent`.
 
 > [!mwe] Parse `Content-Range` (Python 3.10+)
+> - **Used for:** Reading which bytes a `206 Partial Content` response contains, and the file's total size.
+> - **Input:** The value of a `Content-Range` header, e.g. `"bytes 0-99/1234"`.
+> - **Expected output:** A tuple `(start, end, total)` — `(0, 99, 1234)`; `total` is `None` for `bytes 5-9/*`; `ValueError` for any unit other than `bytes`.
+>
 > ```python
 > def parse_content_range(value: str) -> tuple[int, int, int | None]:
 >     unit, _, rest = value.strip().partition(" ")
@@ -87,6 +91,10 @@ Serving ranges: most static servers (NGINX, Apache, Caddy, S3, CDNs) do it autom
 > ```
 
 > [!mwe] Try it on the command line
+> - **Used for:** Checking from the command line whether a server supports range requests.
+> - **Input:** Any URL of a static file.
+> - **Expected output:** The response headers; a server with range support shows status `206` and `content-range: bytes 0-0/13804` (the number is the file size). Status `200` means ranges are not supported.
+>
 > ```bash
 > curl -s -D - -o /dev/null -r 0-0 https://raw.githubusercontent.com/python/cpython/main/LICENSE
 > # look for: HTTP/2 206 and content-range: bytes 0-0/<total size>

@@ -1,0 +1,15 @@
+diff --git a/quartz/components/scripts/mermaid.inline.ts b/quartz/components/scripts/mermaid.inline.ts
+index 19ef24d..9438e9f 100644
+--- a/quartz/components/scripts/mermaid.inline.ts
++++ b/quartz/components/scripts/mermaid.inline.ts
+@@ -182,6 +182,10 @@ document.addEventListener("nav", async () => {
+       startOnLoad: false,
+       securityLevel: "loose",
+       theme: darkMode ? "dark" : "base",
++      // Mermaid measures label text with this top-level font (default "trebuchet ms"),
++      // while the theme below renders it in the code font. Measure with the same font,
++      // or sequence-diagram boxes come out narrower than their labels.
++      fontFamily: computedStyleMap["--codeFont"],
+       themeVariables: {
+         fontFamily: computedStyleMap["--codeFont"],
+         primaryColor: computedStyleMap["--light"],

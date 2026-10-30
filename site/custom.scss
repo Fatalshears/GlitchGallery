@@ -45,7 +45,9 @@ pre:has(> code.mermaid) {
 }
 
 // Mermaid's built-in dark theme fills nodes near-black; use Everforest bg1 instead.
-:root[saved-theme="dark"] .mermaid :is(.node rect, .node polygon, .node circle, .node path) {
+:root[saved-theme="dark"]
+  .mermaid
+  :is(.node rect, .node polygon, .node circle, .node path, rect.actor) {
   fill: #343f44 !important;
 }
 

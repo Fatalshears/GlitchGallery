@@ -52,6 +52,10 @@ flowchart LR
 With a static split, the download finishes only when the slowest segment does. IDM-style managers avoid that:
 
 > [!pseudocode] Work stealing between segments
+> - **Used for:** Keeping all connections busy until the end by splitting the segment with the most bytes left.
+> - **Input:** The list of unfinished segments and an idle worker.
+> - **Expected output:** The idle worker gets the second half of the largest remaining segment, or nothing if every segment is smaller than `MIN_SPLIT`.
+>
 > ```
 > when worker W finishes its segment:
 >     S = unfinished segment with the most remaining bytes
@@ -87,6 +91,10 @@ Cookbook: [[http-streaming-in-python]] · [[python-threads-and-asyncio]] · [[no
 ## Minimal working examples
 
 > [!mwe] TypeScript, Node.js ≥ 22.18 — `examples/download-manager/typescript/segmented-download.ts`
+> - **Used for:** The core flow of a parallel segmented download in Node.js.
+> - **Input:** `node segmented-download.ts <url> <dest> [connections]`.
+> - **Expected output:** The complete file at `<dest>` and the line `done`; for servers without range support it falls back to a single stream.
+>
 > ```ts
 > const { total, ranges } = await probe(url);           // Range: bytes=0-0
 > const file = await open(`${dest}.part`, "w");

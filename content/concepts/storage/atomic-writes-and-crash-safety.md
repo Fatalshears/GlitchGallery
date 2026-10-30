@@ -64,6 +64,10 @@ What a crash leaves behind under different strategies:
 - C++17: `std::filesystem::rename`; POSIX `fsync`, `rename`; Windows `ReplaceFileW` / `MoveFileExW(MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)`.
 
 > [!tested] Python — `atomic_write_json()` in `minidm/state.py`
+> - **Used for:** Saving a small state or settings file so a crash never leaves it half-written.
+> - **Input:** The target path and a JSON-serializable `dict`.
+> - **Expected output:** Returns `None`; `path` now contains the new JSON. After a crash at any point, `path` holds either the complete old or the complete new content, and no temporary file is left after an exception.
+>
 > ```python
 > def atomic_write_json(path: str, data: dict) -> None:
 >     directory = os.path.dirname(os.path.abspath(path))
@@ -79,6 +83,10 @@ What a crash leaves behind under different strategies:
 > The reference skips the directory fsync: losing the *latest* checkpoint on power loss only means re-downloading a few MiB. A database could not accept that.
 
 > [!pseudocode] Durability ordering for progress records
+> - **Used for:** The order of operations that keeps recorded progress truthful after a crash.
+> - **Input:** Chunks of downloaded data and the current progress record.
+> - **Expected output:** A progress file that never claims more bytes than are actually on disk.
+>
 > ```
 > write data chunk(s) to data file
 > fsync(data file)                 # 1. bytes are on disk

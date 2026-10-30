@@ -84,6 +84,10 @@ classDiagram
 ### M1 — Single stream
 
 > [!pseudocode]
+> - **Used for:** The core loop of milestone M1 — download one URL in a single stream without leaving a broken file behind.
+> - **Input:** A URL and a destination path.
+> - **Expected output:** The complete file at the destination path; on any error, no file under the final name (only a leftover `dest.part`).
+>
 > ```
 > open dest.part for writing
 > for chunk in response (64 KiB at a time): write chunk
@@ -122,6 +126,10 @@ One shared `TokenBucket` consumed after each chunk read. After completion, strea
 ## Reference implementation
 
 > [!tested] `examples/download-manager/python/` — `minidm`
+> - **Used for:** Running the reference implementation's test suite, then downloading a real file with its command-line interface.
+> - **Input:** None for the tests; for the CLI, a URL, a destination file name and `-c 4` (number of connections).
+> - **Expected output:** `20 passed` from pytest; the CLI prints progress percentages to stderr, then `done`, and `LICENSE.txt` (13 804 bytes at the time of writing) appears in the current directory.
+>
 > ```bash
 > cd examples/download-manager/python
 > python -m pytest -q                                    # 20 tests

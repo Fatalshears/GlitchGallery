@@ -26,6 +26,10 @@ Concepts: [[http-range-requests]] · [[random-access-file-io]] · [[async-io-eve
 ## Recipes
 
 > [!mwe] Stream a download to disk with backpressure
+> - **Used for:** Saving an HTTP response to disk in Node.js without buffering it in memory.
+> - **Input:** The URL in the snippet; run as an ES module (`.mts` file, or `"type": "module"` in package.json).
+> - **Expected output:** A file `LICENSE.txt` (13 804 bytes at the time of writing); throws `Error: HTTP <status>` for 4xx/5xx.
+>
 > ```ts
 > import { createWriteStream } from "node:fs";
 > import { Readable } from "node:stream";
@@ -38,6 +42,10 @@ Concepts: [[http-range-requests]] · [[random-access-file-io]] · [[async-io-eve
 > `pipeline` handles backpressure and closes both streams on error.
 
 > [!mwe] Timeout and cancel
+> - **Used for:** Putting an upper bound on how long a request may take.
+> - **Input:** A `url` variable.
+> - **Expected output:** The `Response` as usual, or, after 30 s, a rejected promise with a `DOMException` named `TimeoutError`.
+>
 > ```ts
 > const res = await fetch(url, { signal: AbortSignal.timeout(30_000) });  // aborts with TimeoutError
 > ```

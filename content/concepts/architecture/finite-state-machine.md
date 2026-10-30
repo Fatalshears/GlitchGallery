@@ -65,6 +65,10 @@ Enums, dictionaries/maps, event handling.
 ## Implementation techniques and APIs
 
 > [!mwe] Table-driven FSM (Python 3.10+)
+> - **Used for:** Enforcing a download task's lifecycle: only listed state transitions are allowed.
+> - **Input:** Events passed to `task.fire()`, e.g. `"start"` then `"pause"`.
+> - **Expected output:** The task's `state` changes (`QUEUED → RUNNING → PAUSED`) and listeners are notified; an event not allowed in the current state raises `IllegalTransition`. Running the snippet prints nothing; the final `assert` passes.
+>
 > ```python
 > from enum import Enum, auto
 >
@@ -105,6 +109,10 @@ Enums, dictionaries/maps, event handling.
 > ```
 
 > [!mwe] TypeScript with discriminated unions (data per state)
+> - **Used for:** Modelling per-state data in TypeScript so the compiler rejects impossible combinations (e.g. a `bytesDone` on a queued task).
+> - **Input:** A type definition — no runtime input.
+> - **Expected output:** No runtime output; type errors at compile time when code reads a field that does not exist in the current state, or a `switch (task.state)` misses a case (with an exhaustiveness check).
+>
 > ```ts
 > type Task =
 >   | { state: "queued" }

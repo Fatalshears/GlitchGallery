@@ -45,6 +45,10 @@ flowchart LR
 Hash while downloading only if bytes arrive **in order** (single stream). With segments arriving out of order, hash the finished file in one sequential pass — cheap compared to the network.
 
 > [!mwe] Command line
+> - **Used for:** Computing or verifying a file's SHA-256 from the command line on each OS.
+> - **Input:** The downloaded file and, for `-c`, the publisher's `SHA256SUMS` file.
+> - **Expected output:** The 64-character hex digest; with `-c`, a line `ubuntu.iso: OK` or `ubuntu.iso: FAILED`.
+>
 > ```bash
 > sha256sum ubuntu.iso                  # Linux
 > shasum -a 256 ubuntu.iso              # macOS

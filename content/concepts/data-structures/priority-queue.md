@@ -50,6 +50,10 @@ Arrays, trees, Big-O notation.
 | C++ | `std::priority_queue<T, Vec, Cmp>` | **max**-heap by default; use `std::greater<>` for min |
 
 > [!mwe] Download queue ordered by priority, then FIFO (Python 3.10+)
+> - **Used for:** Ordering a download queue by priority, keeping insertion order among equal priorities.
+> - **Input:** `add(url, priority)` calls; higher number = more urgent.
+> - **Expected output:** Four printed lines: `urgent.iso`, `docs.zip`, `notes.pdf`, `backup.tar`.
+>
 > ```python
 > import heapq, itertools
 >
@@ -66,6 +70,10 @@ Arrays, trees, Big-O notation.
 > The counter breaks ties so items with equal priority keep insertion order and the URL strings are never compared.
 
 > [!mwe] C++ min-heap of (time, id)
+> - **Used for:** A timer queue in C++ that always yields the earliest deadline first.
+> - **Input:** `(due_time, task_id)` pairs pushed with `timers.push(...)`.
+> - **Expected output:** `timers.top()` is the pair with the smallest due time — here `due = 10`, `id = 2`. (Needs `#include <queue> <vector> <functional>`.)
+>
 > ```cpp
 > using Item = std::pair<long, int>;                     // (due_time, task_id)
 > std::priority_queue<Item, std::vector<Item>, std::greater<>> timers;

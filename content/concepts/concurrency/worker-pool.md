@@ -65,6 +65,10 @@ Threads and processes basics; shared memory and locks; exceptions across threads
 | C++ | `std::thread` + queue + `std::condition_variable`; `std::async`; Boost.Asio `thread_pool`; TBB |
 
 > [!mwe] Fan-out/fan-in with error collection (Python 3.10+)
+> - **Used for:** Running several network requests in parallel and collecting each result or error.
+> - **Input:** A list of URLs (three example sites).
+> - **Expected output:** One line per URL in completion order, e.g. `https://example.com 1256`, or `<url> failed: <error>` for a URL that could not be fetched.
+>
 > ```python
 > from concurrent.futures import ThreadPoolExecutor, as_completed
 > import urllib.request

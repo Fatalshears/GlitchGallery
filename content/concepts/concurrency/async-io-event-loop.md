@@ -59,6 +59,10 @@ Functions and callbacks; sockets basics; what "blocking" means.
 - **C++:** Boost.Asio / standalone Asio with C++20 coroutines (`co_await`), or libcurl's multi interface for many transfers on one thread.
 
 > [!mwe] Concurrent range downloads with httpx (Python 3.11+, httpx 0.27+)
+> - **Used for:** Downloading parts of one file concurrently on a single thread with asyncio.
+> - **Input:** `await main(url, total, parts)`: a URL whose server supports ranges, its total size in bytes, and the number of parts (default 4).
+> - **Expected output:** The whole file as one `bytes` object (length `total`); raises `AssertionError` if the server ignores `Range`, or `httpx.HTTPStatusError` on 4xx/5xx.
+>
 > ```python
 > import asyncio, httpx
 >
