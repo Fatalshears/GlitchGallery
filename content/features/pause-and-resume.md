@@ -31,7 +31,7 @@ stateDiagram-v2
   Queued --> Probing: start
   Probing --> Downloading: size + validator known
   Downloading --> Paused: user pauses
-  Paused --> Downloading: resume (If-Range)
+  Paused --> Queued: resume (re-enters queue; skips probe, uses If-Range)
   Downloading --> Retrying: transient error
   Retrying --> Downloading: backoff elapsed
   Retrying --> Failed: retries exhausted
@@ -49,7 +49,7 @@ Resume request after a crash, with a change check:
 sequenceDiagram
   participant C as Client
   participant S as Server
-  Note over C: state: seg2 done=300 000 of 500 000<br/>etag "v1"
+  Note over C: state: seg 3 = bytes 500 000–749 999, done = 50 000<br/>etag "v1"
   C->>S: GET /file<br/>Range: bytes=550000-749999<br/>If-Range: "v1"
   alt file unchanged
     S-->>C: 206 Partial Content<br/>Content-Range: bytes 550000-749999/1000000

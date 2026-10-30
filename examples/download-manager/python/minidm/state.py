@@ -48,8 +48,8 @@ def atomic_write_json(path: str, data: dict) -> None:
     """Write JSON so readers see either the old file or the new one, never half.
 
     Pattern: write temp file in the same directory -> flush -> fsync -> rename.
-    `os.replace` is atomic on POSIX and Windows when source and target are on
-    the same volume.
+    `os.replace` is atomic on POSIX when source and target are on the same
+    filesystem; on Windows (MoveFileExW) it is atomic in practice on NTFS.
     """
     directory = os.path.dirname(os.path.abspath(path))
     fd, tmp = tempfile.mkstemp(prefix=".tmp-", dir=directory)

@@ -88,7 +88,7 @@ File descriptors/handles, binary vs text mode, buffering.
 - `open(p, "w")` **truncates** — resuming with `"w"` destroys progress. Use `"r+b"`.
 - `pwrite` may write fewer bytes than asked (rare for regular files, but check the return value).
 - Disk full (`ENOSPC`) may appear only at write or `fsync` time unless you preallocate with `fallocate`.
-- Sparse-file support differs: FAT32/exFAT do not support sparse files, so `truncate` there writes zeros (slow for large sizes).
+- Sparse-file support differs: FAT32 has no sparse files, so extending a file there writes zeros (slow for large sizes); exFAT and NTFS track a valid-data length instead.
 - Windows: files opened by another process with sharing denied fail with `PermissionError`; antivirus can briefly lock new files.
 - Max file size: FAT32 is limited to 4 GiB − 1 byte.
 

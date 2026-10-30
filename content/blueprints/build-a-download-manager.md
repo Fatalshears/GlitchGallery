@@ -125,7 +125,7 @@ One shared `TokenBucket` consumed after each chunk read. After completion, strea
 > ```bash
 > cd examples/download-manager/python
 > python -m pytest -q                                    # 20 tests
-> python -m minidm https://www.rfc-editor.org/rfc/rfc9110.txt rfc9110.txt -c 4
+> python -m minidm https://raw.githubusercontent.com/python/cpython/main/LICENSE LICENSE.txt -c 4
 > ```
 > | File | Milestones |
 > |---|---|

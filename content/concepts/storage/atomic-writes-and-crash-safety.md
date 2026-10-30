@@ -59,7 +59,7 @@ What a crash leaves behind under different strategies:
 ## Implementation techniques and APIs
 
 - Create the temp file **in the same directory** as the target; rename across filesystems is a copy, not atomic.
-- Python: `tempfile.mkstemp(dir=...)`, `os.fsync`, `os.replace` (atomic replace on POSIX and Windows).
+- Python: `tempfile.mkstemp(dir=...)`, `os.fsync`, `os.replace` (atomic on POSIX; on Windows it calls `MoveFileExW` with `MOVEFILE_REPLACE_EXISTING`, which is atomic in practice on NTFS but not formally guaranteed).
 - Node: `fs.promises.writeFile(tmp)`, `filehandle.sync()`, `fs.promises.rename` (or the `write-file-atomic` package).
 - C++17: `std::filesystem::rename`; POSIX `fsync`, `rename`; Windows `ReplaceFileW` / `MoveFileExW(MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)`.
 

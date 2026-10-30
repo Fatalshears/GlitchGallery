@@ -27,9 +27,9 @@ Rule of thumb: standard library for tools that must run anywhere; `httpx` for ap
 > ```python
 > import shutil, urllib.request
 >
-> req = urllib.request.Request("https://www.rfc-editor.org/rfc/rfc9110.txt",
+> req = urllib.request.Request("https://raw.githubusercontent.com/python/cpython/main/LICENSE",
 >                              headers={"User-Agent": "learn/1.0"})
-> with urllib.request.urlopen(req, timeout=30) as resp, open("rfc9110.txt", "wb") as out:
+> with urllib.request.urlopen(req, timeout=30) as resp, open("LICENSE.txt", "wb") as out:
 >     shutil.copyfileobj(resp, out, length=64 * 1024)
 > ```
 

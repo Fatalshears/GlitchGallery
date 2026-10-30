@@ -80,7 +80,13 @@ Monotonic clocks; locks for thread safety; basic arithmetic with floats.
 > export class TokenBucket {
 >   private tokens: number;
 >   private last = performance.now();
->   constructor(private rate: number, private capacity = rate) { this.tokens = capacity; }
+>   private readonly rate: number;
+>   private readonly capacity: number;
+>   constructor(rate: number, capacity = rate) {
+>     this.rate = rate;
+>     this.capacity = capacity;
+>     this.tokens = capacity;
+>   }
 >   tryTake(n = 1): boolean {
 >     const now = performance.now();
 >     this.tokens = Math.min(this.capacity, this.tokens + ((now - this.last) / 1000) * this.rate);

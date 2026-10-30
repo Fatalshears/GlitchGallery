@@ -88,8 +88,8 @@ Serving ranges: most static servers (NGINX, Apache, Caddy, S3, CDNs) do it autom
 
 > [!mwe] Try it on the command line
 > ```bash
-> curl -s -D - -o /dev/null -r 0-0 https://www.rfc-editor.org/rfc/rfc9110.txt
-> # look for: HTTP/... 206 and Content-Range: bytes 0-0/<total size>
+> curl -s -D - -o /dev/null -r 0-0 https://raw.githubusercontent.com/python/cpython/main/LICENSE
+> # look for: HTTP/2 206 and content-range: bytes 0-0/<total size>
 > ```
 > Any large static file works; if the server answers 200, it does not support ranges.
 

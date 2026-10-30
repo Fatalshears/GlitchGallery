@@ -8,7 +8,7 @@ status: draft
 
 ## Purpose
 
-Internet Download Manager (IDM, by Tonec Inc., Windows, first released in the late 1990s) is a desktop **download manager**: it takes over file downloads from web browsers and makes them faster, resumable and organized. Comparable products: Free Download Manager, aria2 (command line), JDownloader, and the download managers built into browsers.
+Internet Download Manager (IDM, by Tonec Inc., Windows) is a desktop **download manager**: it takes over file downloads from web browsers and makes them faster, resumable and organized. Comparable products: Free Download Manager, aria2 (command line), JDownloader, and the download managers built into browsers.
 
 ## Users and pain points
 
@@ -53,7 +53,7 @@ sequenceDiagram
   participant S as Web server
   U->>B: clicks a download link
   B->>A: URL, cookies, referrer, file name (native messaging)
-  B-->>S: (browser's own download cancelled)
+  Note over B: extension cancels the browser's own download
   A->>S: probe: GET Range bytes=0-0
   S-->>A: 206 Partial Content, Content-Range: bytes 0-0/4294967296, ETag
   A->>A: plan N segments, preallocate file, save state

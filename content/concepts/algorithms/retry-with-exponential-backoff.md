@@ -68,7 +68,11 @@ HTTP status codes; exceptions; random number generation; [[http-range-requests]]
 > [!mwe] Generic retry helper (TypeScript)
 > ```ts
 > export class HttpError extends Error {
->   constructor(public status: number) { super(`HTTP ${status}`); }
+>   readonly status: number;
+>   constructor(status: number) {
+>     super(`HTTP ${status}`);
+>     this.status = status;
+>   }
 > }
 > const RETRYABLE = new Set([408, 425, 429, 500, 502, 503, 504]);
 > // Network failures (fetch throws TypeError) are transient; HTTP errors only if listed.

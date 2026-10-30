@@ -11,7 +11,7 @@ levels: [1, 2, 3]
 
 A single HTTP connection often cannot use all available bandwidth: servers cap per-connection speed, TCP needs time to ramp up, and on long-distance links one flow is limited by latency and packet loss. **Segmented download** splits a file into byte ranges and fetches them over several connections at once, then writes each range into its place in the output file.
 
-Used by: [[internet-download-manager|IDM]], aria2, browser "parallel downloading" flags, cloud SDKs (AWS S3 Transfer Manager's multipart download, `gsutil -o GSUtil:parallel_thread_count`), package managers, video players (segment prefetching).
+Used by: [[internet-download-manager|IDM]], aria2, browser "parallel downloading" flags, cloud SDKs (AWS S3 Transfer Manager's multipart download, Google Cloud Storage sliced object downloads), package managers, video players (segment prefetching).
 
 ## Core concepts and terminology
 

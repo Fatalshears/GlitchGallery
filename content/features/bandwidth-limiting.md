@@ -36,7 +36,7 @@ sequenceDiagram
   TB-->>W1: OK (tokens available)
   W2->>K: recv(64 KiB)
   W2->>TB: consume(64 KiB)
-  TB-->>W2: wait 40 ms
+  TB-->>W2: wait ≈ 64 ms (64 KiB ÷ 1 MB/s)
   Note over K: socket buffer fills while workers wait →<br/>TCP advertises smaller window →<br/>server sends slower
 ```
 

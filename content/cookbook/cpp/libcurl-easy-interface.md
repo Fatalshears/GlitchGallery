@@ -55,7 +55,7 @@ CMake: `find_package(CURL REQUIRED)` and `target_link_libraries(app PRIVATE CURL
 >   curl_global_init(CURL_GLOBAL_DEFAULT);
 >   CURL* h = curl_easy_init();
 >   std::string body;
->   curl_easy_setopt(h, CURLOPT_URL, "https://www.rfc-editor.org/rfc/rfc9110.txt");
+>   curl_easy_setopt(h, CURLOPT_URL, "https://raw.githubusercontent.com/python/cpython/main/LICENSE");
 >   curl_easy_setopt(h, CURLOPT_RANGE, "0-99");
 >   curl_easy_setopt(h, CURLOPT_WRITEFUNCTION, sink);
 >   curl_easy_setopt(h, CURLOPT_WRITEDATA, &body);

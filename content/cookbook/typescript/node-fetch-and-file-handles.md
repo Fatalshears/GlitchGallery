@@ -31,9 +31,9 @@ Concepts: [[http-range-requests]] · [[random-access-file-io]] · [[async-io-eve
 > import { Readable } from "node:stream";
 > import { pipeline } from "node:stream/promises";
 >
-> const res = await fetch("https://www.rfc-editor.org/rfc/rfc9110.txt");
+> const res = await fetch("https://raw.githubusercontent.com/python/cpython/main/LICENSE");
 > if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
-> await pipeline(Readable.fromWeb(res.body as any), createWriteStream("rfc9110.txt"));
+> await pipeline(Readable.fromWeb(res.body as any), createWriteStream("LICENSE.txt"));
 > ```
 > `pipeline` handles backpressure and closes both streams on error.
 
