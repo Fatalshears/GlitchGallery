@@ -27,6 +27,10 @@ flowchart LR
 ## Recipe
 
 > [!tested] `examples/download-manager/python/tests/rangeserver.py` + `conftest.py` (abridged)
+> - **Used for:** A pytest fixture that starts a local HTTP server whose behaviour each test can configure.
+> - **Input:** Set fields on the yielded config inside a test, e.g. `server.body = data` and `server.drops = 3`.
+> - **Expected output:** `server.url` (e.g. `http://127.0.0.1:54321/file.bin`) serving the body with range support and the injected faults; `server.range_log` records every `Range` header received.
+>
 > ```python
 > @dataclass
 > class ServerConfig:
@@ -51,6 +55,10 @@ flowchart LR
 > The handler parses `Range`, honours `If-Range`, returns 206/200/416, and injects drops and failures from the config.
 
 > [!tested] A fault-injection test
+> - **Used for:** Proving that the downloader survives dropped connections without re-downloading bytes.
+> - **Input:** The `server` fixture configured to drop the connection after 50 000 bytes, three times.
+> - **Expected output:** The test passes: the downloaded file equals the source and no byte offset was requested twice.
+>
 > ```python
 > def test_dropped_connections_are_retried_and_resumed(server, tmp_path):
 >     server.body = BODY
@@ -63,6 +71,10 @@ flowchart LR
 > ```
 
 Run all tests:
+
+- **Used for:** Running the reference implementation's tests locally.
+- **Input:** Python 3.10+.
+- **Expected output:** `20 passed in …s`.
 
 ```bash
 cd examples/download-manager/python

@@ -53,6 +53,10 @@ TCP basics: handshake, ACKs, windows. *Computer Networking: A Top-Down Approach*
 
 Mostly a **measurement** concept:
 
+- **Used for:** Measuring the quantities that limit TCP throughput: round-trip time, single vs parallel stream throughput, and per-connection TCP state.
+- **Input:** A reachable host; for `iperf3`, a machine running `iperf3 -s`; `ss` needs Linux.
+- **Expected output:** `ping`: RTT statistics in ms; `iperf3`: throughput in Mbit/s for 1 and 8 streams (compare them); `ss -ti`: one block per socket with `rtt`, `cwnd` and `retrans` values.
+
 ```bash
 ping -c 5 example.com                         # RTT
 iperf3 -c <server> -P 1   vs   iperf3 -c <server> -P 8   # 1 vs 8 parallel streams
@@ -60,6 +64,10 @@ ss -ti                                         # Linux: per-socket cwnd, rtt, re
 ```
 
 > [!pseudocode] Adaptive connection count
+> - **Used for:** Adjusting the number of connections automatically based on measured throughput.
+> - **Input:** A throughput measurement every 5 seconds; a maximum connection count.
+> - **Expected output:** An updated connection count: up by one while throughput still improves by more than 10 %, down by one when it drops by more than 10 %.
+>
 > ```
 > conns = 2
 > loop every 5 s:

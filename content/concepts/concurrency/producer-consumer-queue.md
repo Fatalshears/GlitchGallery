@@ -53,6 +53,10 @@ Threads, locks, condition variables (or async equivalents).
 | C++ | `std::queue` + `std::mutex` + `std::condition_variable` (no standard blocking queue) |
 
 > [!mwe] Bounded queue with sentinel shutdown (Python 3.10+)
+> - **Used for:** Handing work from a producer to two consumer threads through a bounded queue, then shutting them down cleanly.
+> - **Input:** Five job names produced by the main thread; queue capacity 2.
+> - **Expected output:** Five lines such as `c0 handles job-0`, `c1 handles job-1` … (which consumer gets which job varies run to run); both threads exit after receiving the `None` sentinel.
+>
 > ```python
 > import queue, threading
 >
@@ -60,7 +64,7 @@ Threads, locks, condition variables (or async equivalents).
 >
 > def consumer(name: str) -> None:
 >     while (item := q.get()) is not None:
->         print(name, "handles", item)
+>         print(f"{name} handles {item}\n", end="")   # one write, so lines from threads do not mix
 >         q.task_done()
 >     q.task_done()                       # account for the sentinel
 >
@@ -72,6 +76,10 @@ Threads, locks, condition variables (or async equivalents).
 > ```
 
 > [!mwe] C++ blocking queue (C++17)
+> - **Used for:** A thread-safe bounded queue in C++ (the standard library has none).
+> - **Input:** `BlockingQueue<T> q(capacity)`; producers call `q.put(value)`, consumers call `q.get()`.
+> - **Expected output:** `get()` returns items in FIFO order; `put()` blocks while the queue is full and `get()` blocks while it is empty. Add `#include <queue> <mutex> <condition_variable>` to compile.
+>
 > ```cpp
 > template <class T> class BlockingQueue {
 >   std::queue<T> q_; std::mutex m_; std::condition_variable not_empty_, not_full_; size_t cap_;

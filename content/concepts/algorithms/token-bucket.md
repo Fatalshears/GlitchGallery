@@ -34,6 +34,10 @@ flowchart LR
 ```
 
 > [!pseudocode] Lazy-refill token bucket
+> - **Used for:** Explaining the token-bucket algorithm with lazy refill (no background timer).
+> - **Input:** Rate `r` (tokens per second), capacity `b`, and the cost `n` of each request.
+> - **Expected output:** For each `consume(n)`: either OK (tokens deducted) or WAIT(seconds until enough tokens exist).
+>
 > ```
 > state: tokens = b, last = now()
 >
@@ -61,6 +65,10 @@ Monotonic clocks; locks for thread safety; basic arithmetic with floats.
 - **Libraries:** Python `aiolimiter`, `limits`; Node `bottleneck`, `rate-limiter-flexible`; Guava `RateLimiter` (Java); NGINX `limit_req` (leaky-bucket style).
 
 > [!tested] Python — `examples/download-manager/python/minidm/ratelimit.py`
+> - **Used for:** Capping throughput shared by several threads, e.g. total download speed across all segments.
+> - **Input:** `TokenBucket(rate, capacity)` once; then `consume(n)` from any thread with the number of bytes just received.
+> - **Expected output:** Returns nothing; blocks the caller just long enough to keep the average at `rate`. With `rate=capacity=100`, `consume(100)` returns immediately and a following `consume(50)` sleeps about 0.5 s.
+>
 > ```python
 > class TokenBucket:
 >     def consume(self, n: int) -> None:
@@ -76,6 +84,10 @@ Monotonic clocks; locks for thread safety; basic arithmetic with floats.
 > Fake-clock tests: `test_token_bucket_burst_then_throttle`, `test_token_bucket_request_larger_than_capacity`.
 
 > [!mwe] TypeScript (non-blocking check, for request limiting)
+> - **Used for:** Deciding instantly whether a request is allowed under a rate limit, e.g. in an API server.
+> - **Input:** `new TokenBucket(rate, capacity)`; then `tryTake(n)` per request (`n` defaults to 1).
+> - **Expected output:** `true` if the request is allowed (tokens deducted), `false` if over the limit — the caller then answers `429 Too Many Requests`. With `rate = 10`, an idle bucket allows 10 immediate calls, then about one more every 100 ms.
+>
 > ```ts
 > export class TokenBucket {
 >   private tokens: number;

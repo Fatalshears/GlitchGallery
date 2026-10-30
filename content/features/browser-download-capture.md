@@ -56,6 +56,10 @@ sequenceDiagram
 - Native host: any executable that reads 4-byte length-prefixed JSON from stdin and writes the same to stdout.
 
 > [!mwe] Extension service worker (Manifest V3, Chromium)
+> - **Used for:** Taking over a download the user starts in Chrome and sending it to the desktop app.
+> - **Input:** Chrome's `DownloadItem` for every new download (URL, referrer, file name).
+> - **Expected output:** The browser's own download is cancelled and the native host receives `{url, referrer, filename, cookie}`; `blob:`/`data:` downloads are left to the browser.
+>
 > ```ts
 > chrome.downloads.onCreated.addListener(async (item) => {
 >   if (!item.finalUrl.startsWith("http")) return;          // skip blob:, data:

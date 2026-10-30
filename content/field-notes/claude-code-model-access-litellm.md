@@ -25,6 +25,10 @@ The expectation is that LiteLLM transparently bridges Claude Code requests to a 
 
 ## Configuration A — Vertex Mode via LiteLLM Gateway (FAILS)
 
+- **Used for:** The environment variables of the failing setup (Vertex mode through LiteLLM), for comparison.
+- **Input:** Replace `<virtual-key>` and `<proxy-host>` with your LiteLLM values.
+- **Expected output:** Claude Code starts in Vertex mode, then fails model checks, e.g. `The model … is not available on your vertex deployment`.
+
 ```bash
 ANTHROPIC_API_KEY=<virtual-key>
 ANTHROPIC_VERTEX_BASE_URL=http://<proxy-host>:4000
@@ -55,6 +59,8 @@ LiteLLM is a provider-routing gateway, not a Vertex AI emulator. It does not rep
 **Problem 1 — Vertex capability probing fails with stub project/region**
 
 The placeholder values:
+
+- **Used for:** Highlighting the placeholder values that break Vertex capability probing.
 
 ```bash
 CLOUD_ML_REGION=_
@@ -104,6 +110,10 @@ Claude Code Vertex mode expects Vertex-compatible model naming semantics. Anthro
 ---
 
 ## Configuration B — Anthropic API Mode via LiteLLM Gateway (WORKS)
+
+- **Used for:** The working setup: Claude Code in Anthropic API mode through LiteLLM.
+- **Input:** Replace `<virtual-key>` and `<proxy-host>` with your LiteLLM values; do not set `CLAUDE_CODE_USE_VERTEX`.
+- **Expected output:** Claude Code sends `POST /v1/messages` to LiteLLM and requests succeed.
 
 ```bash
 ANTHROPIC_AUTH_TOKEN=<virtual-key>

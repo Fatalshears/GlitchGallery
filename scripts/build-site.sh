@@ -5,7 +5,8 @@
 #   scripts/build-site.sh --serve  # live preview on http://localhost:8080
 #
 # Quartz itself is not vendored: it is cloned into .quartz/ (gitignored) at the
-# pinned tag, and our config/theme from site/ is copied over it.
+# pinned tag, our config/theme from site/ is copied over it, and the small
+# fixes in site/patches/ are applied (the build fails if one no longer applies).
 set -euo pipefail
 
 QUARTZ_VERSION="v4.5.2"
@@ -24,4 +25,9 @@ cp "$root/site/quartz.layout.ts" "$qdir/quartz.layout.ts"
 cp "$root/site/custom.scss" "$qdir/quartz/styles/custom.scss"
 
 cd "$qdir"
+for patch in "$root"/site/patches/*.patch; do
+  # Reset the patched file first so repeated builds re-apply cleanly.
+  git checkout --quiet -- $(sed -n 's#^+++ b/##p' "$patch")
+  git apply "$patch"
+done
 npx quartz build --directory "$root/content" --output "$root/public" "$@"

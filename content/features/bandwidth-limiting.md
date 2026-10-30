@@ -62,6 +62,10 @@ The limiter does not touch the network; it makes the application read slower. TC
 > Thread-safe `TokenBucket(rate, capacity, clock, sleep)`; tests in `tests/test_units.py` use a fake clock to assert exact waiting times.
 
 > [!mwe] Command-line equivalents for comparison
+> - **Used for:** Comparing your limiter with tools that already implement one.
+> - **Input:** Any large file URL (replace the example).
+> - **Expected output:** The file downloads at about 500 KB/s (curl) or 1 MB/s (aria2), visible in each tool's progress display.
+>
 > ```bash
 > curl --limit-rate 500K -O https://example.com/big.iso
 > aria2c --max-overall-download-limit=1M https://example.com/big.iso

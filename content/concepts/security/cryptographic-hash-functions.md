@@ -65,6 +65,10 @@ Bytes vs hex strings; streaming reads ([[random-access-file-io]]).
 Cookbook: [[file-hashing-in-python]].
 
 > [!mwe] Node.js streaming hash
+> - **Used for:** Computing the SHA-256 of a file of any size in Node.js with constant memory.
+> - **Input:** `await sha256File(path)` with the path of an existing file.
+> - **Expected output:** The hex digest string (64 characters), e.g. `e3b0c442…7852b855` for an empty file; the promise rejects if the file cannot be read.
+>
 > ```ts
 > import { createHash } from "node:crypto";
 > import { createReadStream } from "node:fs";

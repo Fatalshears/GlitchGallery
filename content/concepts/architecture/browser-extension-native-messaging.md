@@ -59,6 +59,10 @@ Processes and pipes; binary framing (length-prefixed messages); JSON; extension 
 ## Implementation techniques and APIs
 
 > [!mwe] Native host in Python (3.10+)
+> - **Used for:** A native messaging host — the local program a browser extension talks to.
+> - **Input:** Length-prefixed JSON messages on stdin written by the browser, e.g. `{"url": "https://example.com/a.zip"}`.
+> - **Expected output:** One length-prefixed JSON reply per message on stdout: `{"accepted": true}` for http(s) URLs, `{"accepted": false}` otherwise. Exits when the browser closes stdin.
+>
 > ```python
 > #!/usr/bin/env python3
 > import json, struct, sys
@@ -83,6 +87,10 @@ Processes and pipes; binary framing (length-prefixed messages); JSON; extension 
 > Anything printed to stdout that is not a framed message corrupts the channel — log to stderr or a file.
 
 > [!mwe] Host manifest `com.example.minidm.json`
+> - **Used for:** Registering the native host with Chrome so the extension can find and launch it.
+> - **Input:** Edit `path` (absolute path of the host executable) and the extension ID in `allowed_origins`; save the file in the browser's NativeMessagingHosts location for your OS.
+> - **Expected output:** No output by itself; afterwards `chrome.runtime.sendNativeMessage("com.example.minidm", …)` starts the host instead of failing with "Specified native messaging host not found".
+>
 > ```json
 > {
 >   "name": "com.example.minidm",

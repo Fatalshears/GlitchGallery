@@ -24,6 +24,10 @@ scripts/build-site.sh Builds the site with a pinned Quartz version
 
 Preview locally (Node.js ≥ 22, Git):
 
+- **Used for:** Previewing the wiki locally while you edit.
+- **Input:** Node.js 22+ and Git installed; run from the repository root.
+- **Expected output:** The site served at http://localhost:8080, rebuilt when files in `content/` change.
+
 ```bash
 scripts/build-site.sh --serve
 ```
@@ -36,6 +40,10 @@ scripts/build-site.sh --serve
 - Planned pages may be linked before they exist; list them in the [[roadmap]].
 
 ## Front matter
+
+- **Used for:** The metadata block at the top of every page.
+- **Input:** Fill in the values for your page.
+- **Expected output:** Quartz uses `title`, `tags` and `aliases` for the page title, tag pages and search; the other fields are for readers and future tooling.
 
 ```yaml
 ---
@@ -73,6 +81,10 @@ Cookbook pages are version-specific: state versions in front matter, keep durabl
 
 ## Code example labels
 
+- **Used for:** The three ways to label a code example.
+- **Input:** Pick the label that matches how far the code has been verified, then add Used for / Input / Expected output lines and the code.
+- **Expected output:** A coloured callout box with the matching icon on the rendered page.
+
 ```markdown
 > [!pseudocode] Title
 > conceptual; not runnable
@@ -83,6 +95,21 @@ Cookbook pages are version-specific: state versions in front matter, keep durabl
 > [!tested] Title
 > lives in examples/, covered by CI; link to the file
 ```
+
+Every code example — whatever its label — starts with three lines so a reader knows what it does before reading it:
+
+```markdown
+> [!mwe] Parse `Content-Range` (Python 3.10+)
+> - **Used for:** reading which bytes a 206 response contains.
+> - **Input:** a `Content-Range` header value, e.g. `"bytes 0-99/1234"`.
+> - **Expected output:** `(0, 99, 1234)`; `ValueError` for units other than `bytes`.
+>
+> ```python
+> ...
+> ```
+```
+
+State concrete values in **Expected output** (a printed line, a return value, a file that appears, an error type) so the reader can check their run against it.
 
 Language choice: prefer **Python**, then **TypeScript**, then **C++**, as long as the language fits the problem. Where none fits, use what industry commonly uses for that problem (e.g. SQL for databases, Go for some infrastructure, Swift/Kotlin for mobile) and say why.
 

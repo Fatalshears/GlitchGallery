@@ -24,6 +24,10 @@ Rule of thumb: standard library for tools that must run anywhere; `httpx` for ap
 ## Recipes
 
 > [!mwe] Stream a file to disk with urllib (constant memory)
+> - **Used for:** Downloading a file of any size with only the standard library and constant memory.
+> - **Input:** The URL in the snippet.
+> - **Expected output:** A file `LICENSE.txt` in the current directory (13 804 bytes at the time of writing); nothing is printed.
+>
 > ```python
 > import shutil, urllib.request
 >
@@ -34,6 +38,10 @@ Rule of thumb: standard library for tools that must run anywhere; `httpx` for ap
 > ```
 
 > [!mwe] Range request and status handling with urllib
+> - **Used for:** Probing a server for range support and telling HTTP errors apart from network errors.
+> - **Input:** A `url` variable you define first.
+> - **Expected output:** For a range-capable server: `206 bytes 0-0/<size> "<etag>"`; otherwise `200 None …`, `HTTP error <code> …` for 4xx/5xx, or `network error <reason>` for DNS/connection/TLS failures.
+>
 > ```python
 > import urllib.error, urllib.request
 >
@@ -48,6 +56,10 @@ Rule of thumb: standard library for tools that must run anywhere; `httpx` for ap
 > ```
 
 > [!mwe] Resume a partial file with httpx
+> - **Used for:** Continuing an interrupted single-stream download with httpx.
+> - **Input:** `resume(url, path, etag)`: the URL, the partially downloaded file, and optionally the ETag saved from the first attempt.
+> - **Expected output:** Returns `None`; `path` now holds the complete file — appended to if the server answered `206`, rewritten from scratch if it answered `200` (file changed or no range support). Raises `httpx.HTTPStatusError` on 4xx/5xx, including `416` when the file was already complete.
+>
 > ```python
 > import os, httpx
 >

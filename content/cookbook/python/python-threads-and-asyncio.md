@@ -27,6 +27,10 @@ Concepts: [[worker-pool]] · [[async-io-event-loop]] · [[producer-consumer-queu
 ## Recipes
 
 > [!mwe] Thread pool with a stop flag
+> - **Used for:** Stopping running thread-pool jobs cooperatively, the way a Pause button would.
+> - **Input:** Eight jobs of about 0.5 s each; the stop flag is set after 0.2 s.
+> - **Expected output:** A list like `[-1, -1, -1, -1, -1, -1, -1, -1]`: every job saw the flag and exited early (jobs that never started also return `-1`).
+>
 > ```python
 > import threading, time
 > from concurrent.futures import ThreadPoolExecutor
@@ -47,6 +51,10 @@ Concepts: [[worker-pool]] · [[async-io-event-loop]] · [[producer-consumer-queu
 > ```
 
 > [!mwe] asyncio with bounded concurrency and timeouts (3.11+)
+> - **Used for:** Running many coroutines with at most three at a time and a per-job timeout.
+> - **Input:** Ten jobs that sleep `0.1 × i` seconds.
+> - **Expected output:** `[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]` after about 2 s; a job exceeding 2 s would raise `TimeoutError` and cancel the rest of the group.
+>
 > ```python
 > import asyncio
 >

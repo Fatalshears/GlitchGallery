@@ -59,6 +59,10 @@ HTTP status codes; exceptions; random number generation; [[http-range-requests]]
 - Libraries: Python `tenacity`, `urllib3.util.Retry`; Node `p-retry`; AWS SDK retry modes; gRPC retry policy.
 
 > [!tested] Python — `backoff_delay()` and `_retry_or_raise()` in `minidm/downloader.py`
+> - **Used for:** Computing how long to wait before the next retry (exponential backoff with full jitter).
+> - **Input:** `attempt` (1 for the first retry, 2 for the second, …), `base` delay in seconds, `cap` maximum delay in seconds.
+> - **Expected output:** A random float between 0 and `min(cap, base × 2^attempt)` — e.g. `backoff_delay(3, 0.5, 30)` returns a value in [0, 4].
+>
 > ```python
 > def backoff_delay(attempt: int, base: float, cap: float) -> float:
 >     return random.uniform(0, min(cap, base * (2 ** attempt)))
@@ -66,6 +70,10 @@ HTTP status codes; exceptions; random number generation; [[http-range-requests]]
 > Tests: `test_dropped_connections_are_retried_and_resumed`, `test_transient_503_is_retried`, `test_permanent_404_fails_fast`.
 
 > [!mwe] Generic retry helper (TypeScript)
+> - **Used for:** Wrapping any async operation (typically an HTTP call) so transient failures are retried with jittered backoff.
+> - **Input:** `fn`: an async function to call; optional `max` retries (5), `base` delay in ms (250) and `cap` in ms (30 000). Throw `new HttpError(status)` inside `fn` for HTTP failures.
+> - **Expected output:** The value `fn` resolves to; or, after `max` retries or on a non-retryable error (e.g. `HttpError(404)`), the last error is re-thrown.
+>
 > ```ts
 > export class HttpError extends Error {
 >   readonly status: number;

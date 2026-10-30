@@ -63,6 +63,10 @@ File descriptors/handles, binary vs text mode, buffering.
 | Flush to disk | `f.flush(); os.fsync(f.fileno())` | `fh.sync()` | `fsync(fd)` |
 
 > [!mwe] Out-of-order writes into a preallocated file (Python 3.10+, any OS)
+> - **Used for:** Writing parts of a file in any order from several threads into a preallocated file.
+> - **Input:** 1 000 000 random bytes, split into four 250 000-byte parts written in reverse order.
+> - **Expected output:** `out.bin` (1 000 000 bytes) identical to the source; the final `assert` passes and nothing is printed.
+>
 > ```python
 > import os
 > from concurrent.futures import ThreadPoolExecutor

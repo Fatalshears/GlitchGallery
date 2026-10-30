@@ -13,6 +13,10 @@ Concepts: [[cryptographic-hash-functions]] · [[file-integrity-verification]].
 ## Recipes
 
 > [!mwe] Streaming SHA-256, any Python 3
+> - **Used for:** Computing a file's SHA-256 on any Python 3 version without loading the file into memory.
+> - **Input:** `sha256_file(path)` with the path of an existing file.
+> - **Expected output:** A 64-character lower-case hex string, e.g. `e3b0c442…7852b855` for an empty file.
+>
 > ```python
 > import hashlib
 >
@@ -25,6 +29,10 @@ Concepts: [[cryptographic-hash-functions]] · [[file-integrity-verification]].
 > ```
 
 > [!mwe] Python 3.11+ one-liner
+> - **Used for:** The same hash in one call on Python 3.11+.
+> - **Input:** A file opened in binary mode (`ubuntu.iso` here).
+> - **Expected output:** `digest` holds the 64-character hex SHA-256 of the file.
+>
 > ```python
 > import hashlib
 > with open("ubuntu.iso", "rb") as f:
@@ -32,6 +40,10 @@ Concepts: [[cryptographic-hash-functions]] · [[file-integrity-verification]].
 > ```
 
 > [!mwe] Verify against a `SHA256SUMS` file
+> - **Used for:** Checking a download against the publisher's `SHA256SUMS` file.
+> - **Input:** The path of `SHA256SUMS` (lines like `<hex>  ubuntu.iso` or `<hex> *ubuntu.iso`) and the file name to look up.
+> - **Expected output:** The expected hex digest; the `assert` passes silently when the file matches, raises `AssertionError` when it does not, and `KeyError` if the name is not listed.
+>
 > ```python
 > def expected_from_sums(sums_path: str, filename: str) -> str:
 >     with open(sums_path, encoding="utf-8") as f:

@@ -31,7 +31,7 @@ stateDiagram-v2
   Queued --> Probing: start
   Probing --> Downloading: size + validator known
   Downloading --> Paused: user pauses
-  Paused --> Queued: resume (re-enters queue; skips probe, uses If-Range)
+  Paused --> Queued: resume (skips probe, uses If-Range)
   Downloading --> Retrying: transient error
   Retrying --> Downloading: backoff elapsed
   Retrying --> Failed: retries exhausted
@@ -92,6 +92,10 @@ If the process dies between D and F, the state file under-reports progress — s
 > `state.py` (atomic JSON sidecar), `downloader.py` `_commit()` (fsync-then-record), `run()` (restart once on `ResourceChanged`). Tests: `test_pause_then_resume_fetches_only_missing_bytes`, `test_changed_remote_file_restarts_from_scratch`.
 
 > [!mwe] Pausing from another thread (Python 3.10+)
+> - **Used for:** Pausing a running download from another thread and resuming it later.
+> - **Input:** A `url` variable; the destination file `big.iso`.
+> - **Expected output:** After `stop.set()`, `run()` returns `False` and `big.iso.part` + `big.iso.part.json` remain; the second `run()` fetches only the missing bytes and returns `True` with `big.iso` complete.
+>
 > ```python
 > import threading
 > from minidm import Downloader
