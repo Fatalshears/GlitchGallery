@@ -11,7 +11,7 @@ head -c 3000017 /dev/urandom > "$work/src.bin"
 python3 -c "
 import sys
 sys.path.insert(0, '$here/python/tests')
-from conftest import ServerConfig, make_handler
+from rangeserver import ServerConfig, make_handler
 from http.server import ThreadingHTTPServer
 cfg = ServerConfig(body=open('$work/src.bin','rb').read())
 cfg.drop_after, cfg.drops = 100_000, 2

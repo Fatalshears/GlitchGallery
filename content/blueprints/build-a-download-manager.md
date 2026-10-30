@@ -133,7 +133,7 @@ One shared `TokenBucket` consumed after each chunk read. After completion, strea
 > | `minidm/downloader.py` | M1–M6 |
 > | `minidm/state.py` | M5 |
 > | `minidm/ratelimit.py` | M6 |
-> | `tests/conftest.py` | M0 |
+> | `tests/rangeserver.py`, `tests/conftest.py` | M0 |
 > | `tests/test_downloader.py`, `tests/test_units.py` | acceptance tests for all milestones |
 
 Try writing each milestone yourself first, then compare. Differences are learning material: write down *why* the reference chose differently.

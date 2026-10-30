@@ -26,7 +26,7 @@ flowchart LR
 
 ## Recipe
 
-> [!tested] `examples/download-manager/python/tests/conftest.py` (abridged)
+> [!tested] `examples/download-manager/python/tests/rangeserver.py` + `conftest.py` (abridged)
 > ```python
 > @dataclass
 > class ServerConfig:
