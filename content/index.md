@@ -40,14 +40,15 @@ Plus [[field-notes/index|Field Notes]]: short write-ups of real bugs and odd fai
 1. Read [[how-to-learn|How to learn with this wiki]] — the three competency levels and how to study without an AI assistant.
 2. Follow the first complete slice: **[[internet-download-manager|Internet Download Manager (IDM)]]** → [[segmented-download]] → [[http-range-requests]] → [[http-streaming-in-python]] → [[build-a-download-manager]].
 3. Or the graphics slice: **[[adobe-photoshop|Adobe Photoshop]]** → [[layers-and-blend-modes]] → [[alpha-compositing]] → [[numpy-image-processing]] → [[build-a-layered-image-editor]].
-4. Keep the [[glossary]] open; every term there links to the page that explains it.
+4. Or the collaboration slice: **[[excalidraw|Excalidraw]]** → [[real-time-collaboration]] → [[conflict-resolution]] → [[websockets-in-typescript]] → [[build-a-collaborative-whiteboard]].
+5. Keep the [[glossary]] open; every term there links to the page that explains it.
 
 > [!tip] Use the graph
 > The **Graph View** in the right sidebar shows the neighbourhood of the current page. Click the expand icon for the whole wiki. Concepts with many incoming links are the ones most worth mastering first.
 
 ## Coverage so far
 
-Two products are traced end-to-end; others are queued in the [[roadmap]].
+Three products are traced end-to-end; others are queued in the [[roadmap]].
 
 ```mermaid
 flowchart LR
@@ -66,4 +67,12 @@ flowchart LR
   TA --> LUT[Lookup tables] & CG[Colour & gamma]
   BR --> AC
   TI --> WP
+  EX[Excalidraw] --> IC[Infinite canvas] & HS[Hand-drawn shapes] & SEL[Selection] & RTC[Collaboration] & ESL[Encrypted links] & FIL[Files and export]
+  IC --> CTR[Coordinate transforms]
+  HS --> SPR[Seeded random]
+  SEL --> HIT[Hit testing] & SPI[Spatial index]
+  RTC --> CON[Conflict resolution] & WSO[WebSockets] & FRI[Fractional indexing] & DT[Debounce and throttle]
+  ESL --> E2E[End-to-end encryption]
+  FIL --> DT
+  WSO --> RB
 ```

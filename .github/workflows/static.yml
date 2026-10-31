@@ -28,6 +28,8 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 22
+      - name: Check page standard
+        run: python3 scripts/check_wiki.py
       - name: Build site
         run: scripts/build-site.sh
       - name: Setup Pages

@@ -32,6 +32,16 @@ Preview locally (Node.js ≥ 22, Git):
 scripts/build-site.sh --serve
 ```
 
+Check pages against this standard before pushing (CI runs the same check and blocks deployment on failure):
+
+- **Used for:** Finding missing sections, front matter, checklists, diagrams, broken wikilinks, orphan pages and undescribed code examples.
+- **Input:** None; run from the repository root (Python 3.10+).
+- **Expected output:** One line per problem, then `checked N pages, 0 problem(s)` when everything conforms (exit code 0).
+
+```bash
+python3 scripts/check_wiki.py
+```
+
 ## Linking rules
 
 - Link with wikilinks by file name: `[[http-range-requests]]` or `[[http-range-requests|range requests]]`. File names must be unique across the wiki.

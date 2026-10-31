@@ -1,0 +1,11 @@
+{
+  "name": "sketchkit",
+  "version": "0.1.0",
+  "description": "Reference whiteboard engine for the GlitchGallery wiki (no dependencies)",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "test": "node --test"
+  }
+}

@@ -17,7 +17,7 @@ Why C++ for this domain: predictable memory layout, no garbage-collector pauses 
 | Need | Common choice |
 |---|---|
 | Read/write PNG, JPEG | `stb_image.h` / `stb_image_write.h` (single header), libpng, libjpeg-turbo |
-| Everything image | OpenCV (`cv::Mat`, **BGR** order by default), OpenImageIO, VIPS |
+| Everything image | OpenCV (`cv::Mat`; `cv::imread` returns **BGR** order), OpenImageIO, VIPS |
 | Fast pipelines | Halide, Intel IPP, Apple vImage |
 | Threads | `std::thread`, `std::async`, C++17 parallel algorithms, TBB, OpenMP |
 | No dependencies at all | PPM/PGM (header + raw bytes), used in the examples here |

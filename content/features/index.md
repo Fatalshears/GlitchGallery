@@ -19,6 +19,12 @@ A **feature** is something a user can see ("pause a download"). A **component** 
 | [[image-filters]] | Photoshop, camera pipelines, CSS `filter`, game post-processing | [[convolution-and-kernels]], [[tiled-image-processing]] |
 | [[tonal-adjustments]] | Photoshop, Lightroom, video colour grading | [[lookup-tables]], [[color-spaces-and-gamma]] |
 | [[brush-painting]] | Photoshop, Krita, Procreate, whiteboards | [[alpha-compositing]], [[command-pattern]] |
+| [[infinite-canvas]] | Excalidraw, Figma, Miro, online maps | [[coordinate-transforms]], [[spatial-index]] |
+| [[hand-drawn-shapes]] | Excalidraw, tldraw, Balsamiq | [[seeded-pseudorandom-numbers]], [[vector-graphics-and-scene-model]] |
+| [[selection-and-transform]] | Excalidraw, Figma, Illustrator, CAD, games | [[hit-testing]], [[spatial-index]] |
+| [[real-time-collaboration]] | Excalidraw, Figma, Google Docs, multiplayer games | [[conflict-resolution]], [[websockets]], [[fractional-indexing]] |
+| [[encrypted-sharing-links]] | Excalidraw, PrivateBin, Bitwarden Send | [[end-to-end-encryption]] |
+| [[scene-files-and-export]] | Excalidraw, draw.io, any document editor | [[vector-graphics-and-scene-model]], [[debounce-and-throttle]] |
 
 ## Reusable components
 

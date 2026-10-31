@@ -59,17 +59,34 @@ flowchart LR
   TI --> WP
   CP --> COW
   TI --> COW
+  subgraph Collaboration["Vector and collaboration"]
+    VS[Scene model]
+    CT[Coordinate transforms]
+    HT[Hit testing]
+    SX[Spatial index]
+    FI[Fractional indexing]
+    CF[Conflict resolution]
+    WSK[WebSockets]
+    E2E[End-to-end encryption]
+  end
+  CT --> HT --> SX
+  VS --> CF
+  FI --> CF
+  WSK --> CF
+  E2E --> WSK
+  RB --> WSK
 ```
 
 | Domain | Concepts |
 |---|---|
-| Networking | [[http-range-requests]] · [[http-conditional-requests]] · [[parallel-tcp-throughput]] |
+| Networking | [[http-range-requests]] · [[http-conditional-requests]] · [[parallel-tcp-throughput]] · [[websockets]] |
 | Concurrency | [[worker-pool]] · [[producer-consumer-queue]] · [[async-io-event-loop]] |
-| Algorithms | [[token-bucket]] · [[retry-with-exponential-backoff]] · [[flood-fill]] |
-| Data structures | [[priority-queue]] |
+| Algorithms | [[token-bucket]] · [[retry-with-exponential-backoff]] · [[flood-fill]] · [[seeded-pseudorandom-numbers]] · [[fractional-indexing]] · [[debounce-and-throttle]] |
+| Data structures | [[priority-queue]] · [[spatial-index]] |
 | Storage | [[random-access-file-io]] · [[atomic-writes-and-crash-safety]] |
-| Security | [[cryptographic-hash-functions]] |
-| Graphics | [[raster-images-and-pixel-formats]] · [[color-spaces-and-gamma]] · [[alpha-compositing]] · [[convolution-and-kernels]] · [[lookup-tables]] · [[tiled-image-processing]] |
+| Security | [[cryptographic-hash-functions]] · [[end-to-end-encryption]] |
+| Distributed systems | [[conflict-resolution]] |
+| Graphics | [[raster-images-and-pixel-formats]] · [[color-spaces-and-gamma]] · [[alpha-compositing]] · [[convolution-and-kernels]] · [[lookup-tables]] · [[tiled-image-processing]] · [[vector-graphics-and-scene-model]] · [[coordinate-transforms]] · [[hit-testing]] |
 | Architecture & patterns | [[finite-state-machine]] · [[browser-extension-native-messaging]] · [[command-pattern]] · [[copy-on-write]] |
 
 Planned domains with the next slices: databases (indexing, transactions, multi-tenancy), caching (HTTP caching, eviction policies, consistent hashing), search (inverted index, ranking). See [[roadmap]].
