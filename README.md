@@ -41,4 +41,12 @@ cd examples/image-editor/python && python -m pytest -q
 examples/image-editor/smoke_test.sh
 ```
 
+```bash
+cd examples/whiteboard/typescript && node --test
+```
+
+```bash
+examples/whiteboard/smoke_test.sh
+```
+
 See `content/meta/contributing.md` for the page standard.
