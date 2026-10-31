@@ -13,6 +13,12 @@ A **feature** is something a user can see ("pause a download"). A **component** 
 | [[bandwidth-limiting]] | IDM, curl, API gateways, Cloudflare | [[token-bucket]] |
 | [[file-integrity-verification]] | package managers, ISO downloads, SRI | [[cryptographic-hash-functions]] |
 | [[browser-download-capture]] | IDM, password managers, Zotero | [[browser-extension-native-messaging]] |
+| [[layers-and-blend-modes]] | Photoshop, GIMP, Figma, CSS `mix-blend-mode`, video editors | [[alpha-compositing]], [[raster-images-and-pixel-formats]] |
+| [[undo-redo-history]] | Photoshop, every editor, IDEs, spreadsheets | [[command-pattern]], [[copy-on-write]] |
+| [[selections-and-masks]] | Photoshop, GIMP, Krita, photo apps | [[flood-fill]], [[convolution-and-kernels]] |
+| [[image-filters]] | Photoshop, camera pipelines, CSS `filter`, game post-processing | [[convolution-and-kernels]], [[tiled-image-processing]] |
+| [[tonal-adjustments]] | Photoshop, Lightroom, video colour grading | [[lookup-tables]], [[color-spaces-and-gamma]] |
+| [[brush-painting]] | Photoshop, Krita, Procreate, whiteboards | [[alpha-compositing]], [[command-pattern]] |
 
 ## Reusable components
 
