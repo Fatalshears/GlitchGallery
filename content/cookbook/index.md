@@ -21,6 +21,9 @@ Language preference across the wiki: **Python → TypeScript → C++**, as long 
 | TypeScript | [[canvas-2d-drawing]] | [[coordinate-transforms]], [[vector-graphics-and-scene-model]], [[hit-testing]] |
 | TypeScript | [[websockets-in-typescript]] | [[websockets]], [[retry-with-exponential-backoff]], [[conflict-resolution]] |
 | TypeScript | [[web-crypto-aes-gcm]] | [[end-to-end-encryption]] |
+| Python | [[control-and-estimation-in-python]] | [[pid-controller]], [[model-predictive-control]], [[kalman-filter]] |
+| Python | [[can-bus-in-python]] | [[can-bus]] |
+| C++ | [[realtime-cpp]] | [[ring-buffer]], [[fixed-rate-control-loops]], [[functional-safety]] |
 
 ## Runnable examples
 
@@ -31,3 +34,4 @@ Code under [`examples/`](https://github.com/Fatalshears/GlitchGallery/tree/main/
 - `examples/image-editor/python` — **tested reference** image-editing engine `pixkit` (pytest, 42 tests).
 - `examples/image-editor/cpp`, `examples/image-editor/typescript` — blur cross-checked against `pixkit`, undo stack, blend modes and flood fill, run by `examples/image-editor/smoke_test.sh`.
 - `examples/whiteboard/typescript` — **tested reference** whiteboard engine `sketchkit` (`node --test`, 27 tests) plus a WebSocket relay and a two-client encrypted collaboration demo run by `examples/whiteboard/smoke_test.sh`.
+- `examples/driver-assist/python` — **tested reference** driver-assistance building blocks `drivekit` (pytest, 23 tests, simulation only); `examples/driver-assist/cpp` — safety checker cross-checked against Python and a lock-free ring buffer run under ThreadSanitizer, by `examples/driver-assist/smoke_test.sh`.

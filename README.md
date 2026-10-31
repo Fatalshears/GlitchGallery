@@ -49,4 +49,12 @@ cd examples/whiteboard/typescript && node --test
 examples/whiteboard/smoke_test.sh
 ```
 
+```bash
+cd examples/driver-assist/python && python -m pytest -q
+```
+
+```bash
+examples/driver-assist/smoke_test.sh
+```
+
 See `content/meta/contributing.md` for the page standard.

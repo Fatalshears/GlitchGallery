@@ -25,6 +25,12 @@ A **feature** is something a user can see ("pause a download"). A **component** 
 | [[real-time-collaboration]] | Excalidraw, Figma, Google Docs, multiplayer games | [[conflict-resolution]], [[websockets]], [[fractional-indexing]] |
 | [[encrypted-sharing-links]] | Excalidraw, PrivateBin, Bitwarden Send | [[end-to-end-encryption]] |
 | [[scene-files-and-export]] | Excalidraw, draw.io, any document editor | [[vector-graphics-and-scene-model]], [[debounce-and-throttle]] |
+| [[adaptive-cruise-control]] | openpilot, car ACC systems, drones following a target | [[model-predictive-control]], [[kalman-filter]] |
+| [[lane-centering]] | openpilot, path-following robots, tractors | [[pid-controller]], [[on-device-ml-inference]] |
+| [[driver-monitoring]] | openpilot, modern cars (EU GSR) | [[on-device-ml-inference]], [[finite-state-machine]] |
+| [[vehicle-integration]] | openpilot, diagnostics tools, fleet telematics | [[can-bus]] |
+| [[independent-safety-layer]] | openpilot (panda), industrial safety PLCs, medical devices | [[functional-safety]] |
+| [[drive-logging-and-replay]] | openpilot, trading systems, game replays | [[record-and-replay-testing]], [[publish-subscribe-messaging]] |
 
 ## Reusable components
 
