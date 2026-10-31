@@ -39,14 +39,15 @@ Plus [[field-notes/index|Field Notes]]: short write-ups of real bugs and odd fai
 
 1. Read [[how-to-learn|How to learn with this wiki]] — the three competency levels and how to study without an AI assistant.
 2. Follow the first complete slice: **[[internet-download-manager|Internet Download Manager (IDM)]]** → [[segmented-download]] → [[http-range-requests]] → [[http-streaming-in-python]] → [[build-a-download-manager]].
-3. Keep the [[glossary]] open; every term there links to the page that explains it.
+3. Or the graphics slice: **[[adobe-photoshop|Adobe Photoshop]]** → [[layers-and-blend-modes]] → [[alpha-compositing]] → [[numpy-image-processing]] → [[build-a-layered-image-editor]].
+4. Keep the [[glossary]] open; every term there links to the page that explains it.
 
 > [!tip] Use the graph
 > The **Graph View** in the right sidebar shows the neighbourhood of the current page. Click the expand icon for the whole wiki. Concepts with many incoming links are the ones most worth mastering first.
 
 ## Coverage so far
 
-The first product is traced end-to-end; others are queued in the [[roadmap]].
+Two products are traced end-to-end; others are queued in the [[roadmap]].
 
 ```mermaid
 flowchart LR
@@ -57,4 +58,12 @@ flowchart LR
   Q --> PQ[Priority queue] & PC[Producer-consumer]
   BC --> NM[Native messaging]
   IV --> H[Hash functions]
+  PS[Photoshop] --> LB[Layers & blend modes] & UR[Undo history] & SM[Selections] & IF[Filters] & TA[Adjustments] & BR[Brushes]
+  LB --> AC[Alpha compositing] & RI[Raster images]
+  UR --> CP[Command pattern] & COW[Copy-on-write]
+  SM --> FF[Flood fill]
+  IF --> CK[Convolution] & TI[Tiled processing]
+  TA --> LUT[Lookup tables] & CG[Colour & gamma]
+  BR --> AC
+  TI --> WP
 ```

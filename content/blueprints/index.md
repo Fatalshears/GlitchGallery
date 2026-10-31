@@ -8,6 +8,7 @@ A blueprint turns knowledge into a buildable project: ordered milestones, the co
 | Blueprint | Product inspiration | Skills exercised | Reference |
 |---|---|---|---|
 | [[build-a-download-manager]] | [[internet-download-manager\|IDM]] | HTTP, concurrency, file I/O, crash safety, rate limiting, testing | `examples/download-manager/python` (tested) |
+| [[build-a-layered-image-editor]] | [[adobe-photoshop\|Photoshop]] | NumPy, image maths, compositing, convolution, undo architecture, tiling | `examples/image-editor/python` (tested) |
 
 ## How to use a blueprint
 

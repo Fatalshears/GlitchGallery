@@ -33,4 +33,12 @@ cd examples/download-manager/python && python -m pytest -q
 examples/download-manager/smoke_test.sh
 ```
 
+```bash
+cd examples/image-editor/python && python -m pytest -q
+```
+
+```bash
+examples/image-editor/smoke_test.sh
+```
+
 See `content/meta/contributing.md` for the page standard.
