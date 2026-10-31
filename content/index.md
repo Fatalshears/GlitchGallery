@@ -41,14 +41,15 @@ Plus [[field-notes/index|Field Notes]]: short write-ups of real bugs and odd fai
 2. Follow the first complete slice: **[[internet-download-manager|Internet Download Manager (IDM)]]** → [[segmented-download]] → [[http-range-requests]] → [[http-streaming-in-python]] → [[build-a-download-manager]].
 3. Or the graphics slice: **[[adobe-photoshop|Adobe Photoshop]]** → [[layers-and-blend-modes]] → [[alpha-compositing]] → [[numpy-image-processing]] → [[build-a-layered-image-editor]].
 4. Or the collaboration slice: **[[excalidraw|Excalidraw]]** → [[real-time-collaboration]] → [[conflict-resolution]] → [[websockets-in-typescript]] → [[build-a-collaborative-whiteboard]].
-5. Keep the [[glossary]] open; every term there links to the page that explains it.
+5. Or the robotics slice: **[[openpilot]]** → [[independent-safety-layer]] → [[pid-controller]] → [[control-and-estimation-in-python]] → [[build-a-driver-assist-stack]].
+6. Keep the [[glossary]] open; every term there links to the page that explains it.
 
 > [!tip] Use the graph
 > The **Graph View** in the right sidebar shows the neighbourhood of the current page. Click the expand icon for the whole wiki. Concepts with many incoming links are the ones most worth mastering first.
 
 ## Coverage so far
 
-Three products are traced end-to-end; others are queued in the [[roadmap]].
+Four products are traced end-to-end; others are queued in the [[roadmap]].
 
 ```mermaid
 flowchart LR
@@ -75,4 +76,11 @@ flowchart LR
   ESL --> E2E[End-to-end encryption]
   FIL --> DT
   WSO --> RB
+  OP[openpilot] --> ACC[Adaptive cruise] & LCN[Lane centering] & DMN[Driver monitoring] & VIN[CAN integration] & SAF[Safety layer] & LOGR[Logging and replay]
+  ACC --> MPCC[MPC] & KAL[Kalman filter]
+  LCN --> PIDC[PID]
+  DMN --> MLI[On-device inference]
+  VIN --> CANC[CAN bus]
+  SAF --> FSAF[Functional safety] & FSM
+  LOGR --> RRTC[Record and replay] & PSUB[Pub/sub] & RNG[Ring buffer]
 ```

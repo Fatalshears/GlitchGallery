@@ -10,6 +10,7 @@ A blueprint turns knowledge into a buildable project: ordered milestones, the co
 | [[build-a-download-manager]] | [[internet-download-manager\|IDM]] | HTTP, concurrency, file I/O, crash safety, rate limiting, testing | `examples/download-manager/python` (tested) |
 | [[build-a-layered-image-editor]] | [[adobe-photoshop\|Photoshop]] | NumPy, image maths, compositing, convolution, undo architecture, tiling | `examples/image-editor/python` (tested) |
 | [[build-a-collaborative-whiteboard]] | [[excalidraw\|Excalidraw]] | TypeScript, canvas, geometry, spatial indexing, real-time sync, encryption | `examples/whiteboard/typescript` (tested) |
+| [[build-a-driver-assist-stack]] | [[openpilot]] | Control, estimation, CAN, safety, messaging, replay testing (simulation only) | `examples/driver-assist/python` (tested) |
 
 ## How to use a blueprint
 
