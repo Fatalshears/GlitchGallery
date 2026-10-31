@@ -10,7 +10,7 @@ status: draft
 
 Adobe Photoshop is a **raster image editor**: it edits images made of pixels — photographs, scans, digital paintings, textures, UI mock-ups. Thomas and John Knoll wrote the first version; Adobe released Photoshop 1.0 for the Macintosh in February 1990. Comparable products: GIMP, Krita, Affinity Photo, Photopea (browser), Pixelmator.
 
-Photoshop is written mainly in **C++**. In 2021 Adobe shipped Photoshop on the web by compiling the same C++ code base to **WebAssembly** with Emscripten instead of rewriting it — a good example of why performance-critical, long-lived products stay in C++.
+Photoshop is written mainly in **C++**. In 2021 Adobe released a public beta of Photoshop on the web (generally available in 2023), built by compiling the same C++ code base to **WebAssembly** with Emscripten instead of rewriting it — a good example of why performance-critical, long-lived products stay in C++.
 
 ## Users and pain points
 
