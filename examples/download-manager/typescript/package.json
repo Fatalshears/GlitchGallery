@@ -1,0 +1,6 @@
+{
+  "name": "download-manager-typescript-examples",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.18" }
+}

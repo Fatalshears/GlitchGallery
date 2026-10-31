@@ -34,22 +34,27 @@ sequenceDiagram
   loop every control cycle (e.g. 10 Hz)
     S->>M: gap, v_ego, v_lead
     M->>M: predict N steps for candidate accelerations
-    M->>M: minimise cost subject to limits (QP)
+    M->>M: minimise cost subject to limits
     M->>A: apply first acceleration only
   end
 ```
 
-> [!pseudocode] One MPC step with a projected-gradient QP solver
+> [!pseudocode] One MPC step with an accelerated projected-gradient solver
 > - **Used for:** Showing the full loop without a solver library.
-> - **Input:** Current state; matrices `M, c` such that every weighted cost residual is `c + M·a`; box limits.
-> - **Expected output:** A feasible acceleration sequence `a` (within limits) that minimises `||c + M·a||²`; its first element is applied.
+> - **Input:** Current state; matrices `M, c` so that every weighted cost residual is `c + M·a`; a gap model `gap_k = d + J·a`; limits `a_min ≤ a ≤ a_max`.
+> - **Expected output:** A feasible acceleration sequence `a` (within limits) that approximately minimises `½||c + M·a||² + ½·w_safe·Σ max(0, desired_gap − gap_k)²`; its first element is applied.
 >
 > ```
-> H = Mᵀ M ;  g = Mᵀ c            # cost = ½ aᵀ H a + gᵀ a + const
-> step = 1 / largest_eigenvalue(H)
-> a = clip(previous_plan, a_min, a_max)
+> H = Mᵀ M ;  g = Mᵀ c
+> L = λmax(H) + w_safe · λmax(JᵀJ)                     # step size 1/L
+> a = clip(previous_plan, a_min, a_max);  y = a;  t = 1
 > repeat K times:
->     a = clip(a − step · (H a + g), a_min, a_max)    # gradient step, then project into the box
+>     shortfall = max(0, −(gap_const + J y))           # only predicted gaps that are too small
+>     grad = H y + g − w_safe · Jᵀ shortfall
+>     a_new = clip(y − grad / L, a_min, a_max)         # gradient step, then project into the box
+>     t_new = (1 + sqrt(1 + 4t²)) / 2
+>     y = a_new + ((t − 1) / t_new) · (a_new − a)      # momentum (FISTA)
+>     a, t = a_new, t_new
 > return a[0]
 > ```
 
@@ -64,34 +69,36 @@ Linear algebra (matrices, least squares), basic optimization (gradients, constra
 ## Implementation techniques and APIs
 
 > [!tested] Python — `drivekit/mpc.py`
-> - **Used for:** Following a lead vehicle with acceleration limits, comfort costs and a hard jerk limit.
-> - **Input:** Gap, ego speed, lead speed, previous acceleration; tuning in `FollowMPC` (horizon 20 × 0.2 s, time gap 1.5 s, limits −3.5…+2 m/s², jerk ≤ 4 m/s³).
-> - **Expected output:** An acceleration command each call. In closed loop with a lead braking from 25 to 10 m/s, the gap never drops below 4 m and settles near 19 m; closing a 120 m gap at +5 m/s relative speed ends matched to the lead's speed with jerk within 4 m/s³.
+> - **Used for:** Following a lead vehicle, up to a driver set speed, with acceleration limits, comfort costs and a hard jerk limit.
+> - **Input:** Gap, ego speed, lead speed, previous acceleration and optionally the set speed; tuning in `FollowMPC` (horizon 40 × 0.25 s = 10 s, time gap 1.5 s, standstill gap 4 m, limits −3.5…+2 m/s², jerk ≤ 4 m/s³, set speed 30 m/s).
+> - **Expected output:** An acceleration command each call (about 12 ms per call). In closed loop: a lead braking from 25 to 10 m/s leaves a gap of about 19 m at 10 m/s; closing a 120 m gap behind a 25 m/s lead ends at the lead's speed; a **stopped car** 80–200 m ahead is approached and stopped behind at the 4 m standstill gap; on an open road the car reaches but never exceeds the set speed; jerk stays within 4 m/s³ throughout.
 >
 > ```python
 > from drivekit.mpc import FollowMPC
 > mpc = FollowMPC()
-> plan = mpc.solve(gap=30.0, v_ego=25.0, v_lead=20.0)   # 20 planned accelerations
+> plan = mpc.solve(gap=30.0, v_ego=25.0, v_lead=20.0)   # 40 planned accelerations (10 s)
 > a_cmd = mpc.step(gap=30.0, v_ego=25.0, v_lead=20.0)   # first one, jerk-limited from a_prev=0
 > ```
-> Tests: `test_mpc_follows_braking_lead_without_collision`, `test_mpc_closes_a_large_gap_smoothly`, plus the process-replay reference test.
+> Tests: `test_mpc_follows_braking_lead_without_collision`, `test_mpc_closes_a_large_gap_smoothly`, `test_mpc_stops_behind_a_stationary_car` (80 m / 120 m at 20 m/s, 150 m at 25 m/s), `test_mpc_never_exceeds_the_set_speed`, `test_unavoidable_collision_brakes_at_the_comfort_limit_and_reduces_impact_speed`, `test_mpc_rejects_non_finite_inputs`, plus the process-replay reference test.
 
 Solvers in practice: **acados** (openpilot's choice; generates C code), **OSQP**, **CasADi**, `cvxpy` for prototyping.
 
 ## Error handling and edge cases
 
-- **Infeasibility** (no input satisfies all constraints, e.g. a sudden cut-in): use soft constraints with large penalties and fall back to maximum safe braking.
+- **Infeasibility** (no input satisfies all constraints, e.g. a sudden cut-in): use soft constraints with large penalties (drivekit's one-sided `w_safe` term) and fall back to maximum safe braking. With comfort limits the planner then brakes at the limit and still collides when the distance is too short (stopping from 25 m/s needs roughly 110 m); emergency braking beyond comfort limits belongs to a separate system.
 - **Solver time overruns** — warm-start from the previous plan, cap iterations, and keep a safe fallback command.
 - **Model mismatch** (actuator lag, slopes) — re-planning every cycle corrects much of it; model the lag if it is large.
 
 ## Testing and debugging
 
 - Closed-loop scenario tests with assertions on constraints and comfort (jerk) — in drivekit they revealed that the jerk *cost* alone allowed 6 m/s³ peaks, which is why a hard rate limit was added.
+- **Test the case that matters most: a stopped obstacle far ahead.** The first drivekit planner (4 s horizon, symmetric gap cost) passed every following scenario yet drove through a stopped car 120 m ahead — 45 m more than needed to stop. Two fixes were needed: a horizon long enough to see the stop (10 s) and a one-sided penalty, because a cost that also rewards *closing* the gap pulls the car toward the obstacle.
 - Plot the whole predicted plan each cycle, not just the applied command.
 
 ## Limitations and engineering trade-offs
 
-- Longer horizons see further but cost more computation; in drivekit's tests, extending from 4 s to 8 s barely changed peak jerk — weights and limits mattered more.
+- The horizon must cover the longest manoeuvre that matters: a 4 s horizon cannot plan a 7 s stop from 25 m/s. Longer horizons cost computation (drivekit: 40 steps, about 12 ms per solve) — production planners use non-uniform step sizes (short steps now, long steps later) to reach 10 s with few variables.
+- Soft penalties are not guarantees: a very large `w_safe` approximates a hard constraint but can slow the solver; keep hard limits (acceleration box, jerk rate limit) outside the cost.
 - Weight tuning trades comfort against tracking; hard limits should be enforced outside the cost.
 - Nonlinear models (lateral dynamics at the limit) need nonlinear MPC — much harder.
 
@@ -111,4 +118,4 @@ Solvers in practice: **acados** (openpilot's choice; generates C code), **OSQP**
 - Rawlings, Mayne & Diehl, *Model Predictive Control: Theory, Computation, and Design* (free PDF from the authors).
 - acados — https://docs.acados.org/
 - OSQP — https://osqp.org/
-- openpilot longitudinal MPC — https://github.com/commaai/openpilot/tree/master/selfdrive/controls/lib/longitudinal_mpc_lib
+- openpilot longitudinal MPC (directory `selfdrive/controls/lib/longitudinal_mpc_lib` in the repository) — https://github.com/commaai/openpilot

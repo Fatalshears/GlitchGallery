@@ -29,9 +29,9 @@ Language preference across the wiki: **Python → TypeScript → C++**, as long 
 
 Code under [`examples/`](https://github.com/Fatalshears/GlitchGallery/tree/main/examples) is executed in CI:
 
-- `examples/download-manager/python` — **tested reference** (pytest, 20 tests).
+- `examples/download-manager/python` — **tested reference** (pytest, 21 tests).
 - `examples/download-manager/typescript`, `examples/download-manager/cpp` — **minimal working examples**, smoke-tested against the same fault-injecting server.
 - `examples/image-editor/python` — **tested reference** image-editing engine `pixkit` (pytest, 42 tests).
 - `examples/image-editor/cpp`, `examples/image-editor/typescript` — blur cross-checked against `pixkit`, undo stack, blend modes and flood fill, run by `examples/image-editor/smoke_test.sh`.
-- `examples/whiteboard/typescript` — **tested reference** whiteboard engine `sketchkit` (`node --test`, 27 tests) plus a WebSocket relay and a two-client encrypted collaboration demo run by `examples/whiteboard/smoke_test.sh`.
-- `examples/driver-assist/python` — **tested reference** driver-assistance building blocks `drivekit` (pytest, 23 tests, simulation only); `examples/driver-assist/cpp` — safety checker cross-checked against Python and a lock-free ring buffer run under ThreadSanitizer, by `examples/driver-assist/smoke_test.sh`.
+- `examples/whiteboard/typescript` — **tested reference** whiteboard engine `sketchkit` (`node --test`, 31 tests) plus a WebSocket relay and a two-client encrypted collaboration demo run by `examples/whiteboard/smoke_test.sh`.
+- `examples/driver-assist/python` — **tested reference** driver-assistance building blocks `drivekit` (pytest, 31 tests, simulation only); `examples/driver-assist/cpp` — safety checker cross-checked against Python and a lock-free ring buffer run under ThreadSanitizer, by `examples/driver-assist/smoke_test.sh`.

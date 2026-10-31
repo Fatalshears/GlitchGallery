@@ -111,3 +111,30 @@ def test_submaster_latest_value_and_liveness():
     bus.publish(Message("carState", 0.36, {"vEgo": 30}))
     sm.update()
     assert sm.updated == {"carState", "modelV2"} and not sm.all_ok(now=0.36)
+
+
+def test_reengaging_cannot_jump_back_to_a_stale_torque():
+    """While disengaged the car receives no torque, so after re-engaging the limit must ramp from 0."""
+    s, lim = engaged(), SteerLimits()
+    cmd = 0
+    for _ in range(10):  # ramp up to 100
+        cmd = ramp(cmd, 100, lim)
+        assert s.allow_steer(cmd)
+    assert cmd == 100
+    s.on_brake(True)  # driver brakes: controls revoked
+    assert not s.allow_steer(100)  # the planner keeps asking for 100: blocked
+    s.on_brake(False)
+    s.on_cruise(False)
+    s.on_cruise(True)  # driver re-engages cruise
+    assert s.controls_allowed
+    assert not s.allow_steer(100), "100 would be an instant jump from the 0 torque the car is actually applying"
+    assert s.allow_steer(lim.max_rate_up)  # ramping from zero is fine
+
+
+def test_violation_resets_the_reference_to_zero():
+    s, lim = engaged(), SteerLimits()
+    for t in (10, 20, 30):
+        assert s.allow_steer(t)
+    assert not s.allow_steer(lim.max_torque + 1)  # rejected: nothing was sent
+    assert not s.allow_steer(30)  # the next command is judged against 0, not the stale 30
+    assert s.allow_steer(10)

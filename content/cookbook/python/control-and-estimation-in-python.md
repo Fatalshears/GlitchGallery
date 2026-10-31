@@ -58,7 +58,7 @@ Python is the usual language for designing, simulating and tuning controllers â€
 > [!tested] Full reference â€” `examples/driver-assist/python` (`drivekit`)
 > - **Used for:** PID, Kalman filter, MPC, simulators and replay tests working together.
 > - **Input:** Python 3.10+ with numpy and pytest.
-> - **Expected output:** `23 passed`.
+> - **Expected output:** `31 passed` (about 30 s).
 >
 > ```bash
 > cd examples/driver-assist/python

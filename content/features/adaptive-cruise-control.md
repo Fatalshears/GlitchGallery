@@ -67,18 +67,37 @@ flowchart LR
 > ```
 > Tests: `test_mpc_follows_braking_lead_without_collision`, `test_mpc_closes_a_large_gap_smoothly`.
 
-Real stacks add: stopping and starting at a standstill, set-speed and curve-speed limits, a dedicated QP solver (openpilot uses **acados**), and car-specific tuning of how acceleration maps to gas/brake.
+> [!tested] Python — stopping behind a stationary car
+> - **Used for:** The case that decides whether following control is trustworthy: an obstacle that is not moving.
+> - **Input:** Ego at 25 m/s, a stopped car 150 m ahead, set speed 30 m/s; same loop as above with `v_lead=0` and no lead acceleration.
+> - **Expected output:** The car brakes smoothly (never harder than −3.5 m/s², jerk ≤ 4 m/s³) and stops with the minimum gap at the 4 m standstill distance, never closer. It does the same from 80 m at 20 m/s.
+>
+> ```python
+> from drivekit.mpc import FollowMPC
+> from drivekit.sim import Longitudinal
+>
+> mpc, car, a = FollowMPC(), Longitudinal(gap=150.0, v_ego=25.0, v_lead=0.0), 0.0
+> for i in range(350):                                  # 35 s
+>     a = mpc.step(car.gap, car.v_ego, car.v_lead, a_prev=a)
+>     car.step(a, a_lead=0.0, dt=0.1)
+> print(round(car.gap, 1), round(car.v_ego, 2))         # 4.0 0.0
+> ```
+> Tests: `test_mpc_stops_behind_a_stationary_car`, `test_mpc_never_exceeds_the_set_speed`, `test_unavoidable_collision_brakes_at_the_comfort_limit_and_reduces_impact_speed`.
+
+**How far ahead must the car see?** At comfort braking (3.5 m/s²), a 4 m/s³ jerk limit and 0.3 s of actuator lag, stopping needs roughly 72 m from 20 m/s and 108 m from 25 m/s (plus the 4 m standstill gap). Closer than that, no comfort-limited controller can avoid the collision; drivekit then brakes at its limit and reduces the impact speed (from 25 to about 20 m/s when the stopped car is 45 m away) — the rest is the job of automatic emergency braking.
+
+Real stacks add: stopping and starting at a standstill with driver confirmation, curve-speed limits, a dedicated solver (openpilot uses **acados**), and car-specific tuning of how acceleration maps to gas/brake.
 
 ## Error handling and edge cases
 
-- **Cut-ins:** a car merging close ahead makes the gap jump down — limits must still allow firm braking.
+- **Cut-ins:** a car merging close ahead makes the gap jump down — if it is closer than the stopping distance, comfort limits cannot prevent contact; the planner brakes at its limit and a separate emergency-braking function must take over.
 - **Lost lead:** when tracking drops, do not suddenly accelerate to the set speed; ramp.
-- **Stationary objects** are hard for radar-based ACC (filtered as clutter) — a known limitation of many systems.
+- **Stationary objects** are hard for radar-based ACC (filtered as clutter) — a known limitation of many systems. In drivekit the planner itself handles a stopped lead, as long as it is detected early enough (see the distances above).
 - **Actuator lag:** brakes respond with a delay; the plan must anticipate it (the simulator models 0.3 s).
 
 ## Testing and debugging
 
-- Closed-loop scenario tests (lead brakes, cut-in, stop-and-go) with assertions on minimum gap, limits and final state.
+- Closed-loop scenario tests (lead brakes, **stopped obstacle**, cut-in, stop-and-go) with assertions on minimum gap, limits and final state. The first drivekit planner passed the braking-lead test but drove through a stopped car 120 m ahead; only the stopped-obstacle test exposed it ([[model-predictive-control]]).
 - Process replay against recorded drives ([[record-and-replay-testing]]).
 - Plot gap, speeds and acceleration over time — most ACC bugs are visible in a plot.
 
@@ -103,4 +122,4 @@ Real stacks add: stopping and starting at a standstill, set-speed and curve-spee
 
 - ISO 15622 *Intelligent transport systems — Adaptive cruise control systems — Performance requirements and test procedures*.
 - acados (fast optimal control solvers) — https://docs.acados.org/
-- openpilot longitudinal planner — https://github.com/commaai/openpilot/tree/master/selfdrive/controls/lib
+- openpilot longitudinal planner (directory `selfdrive/controls/lib` in the repository) — https://github.com/commaai/openpilot

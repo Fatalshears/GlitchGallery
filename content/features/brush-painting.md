@@ -104,6 +104,6 @@ flowchart LR
 
 ## References
 
-- Adobe, *Brush settings* (spacing, hardness, flow) — https://helpx.adobe.com/photoshop/using/brush-settings.html
+- Adobe, *Brush settings* (spacing, hardness, flow) — https://helpx.adobe.com/photoshop/user-guide.html
 - MDN, *Pointer events* (pressure, coalesced events) — https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events
 - MyPaint brush engine (open source) — https://github.com/mypaint/libmypaint

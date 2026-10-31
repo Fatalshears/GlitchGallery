@@ -11,7 +11,7 @@ status: draft
 
 ## Purpose
 
-openpilot is an open-source **advanced driver-assistance system (ADAS)** from comma.ai (open-sourced in 2016, MIT licence). It runs on a dashboard-mounted device (currently the comma 3X) that plugs into a supported car's internal network and provides **adaptive cruise control** and **automated lane centering** on hundreds of car models, replacing or upgrading the car's stock assistance. It is an SAE **Level 2** system: it steers, accelerates and brakes, but the driver must watch the road at all times, and a camera-based **driver monitor** enforces that.
+openpilot is an open-source **advanced driver-assistance system (ADAS)** from comma.ai (open-sourced in 2016, MIT licence). It runs on a dashboard-mounted device (for example the comma 3X) that plugs into a supported car's internal network and provides **adaptive cruise control** and **automated lane centering** on hundreds of car models, replacing or upgrading the car's stock assistance. It is an SAE **Level 2** system: it steers, accelerates and brakes, but the driver must watch the road at all times, and a camera-based **driver monitor** enforces that.
 
 Most of the code is **Python** (planning, control, process orchestration, tools), with **C/C++** where timing or safety demands it (camera and sensor daemons, messaging, the panda's safety firmware in C).
 

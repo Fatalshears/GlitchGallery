@@ -27,10 +27,11 @@ class SafetyChecker {
   // Returns true if the command may be forwarded to the car.
   bool allow_steer(int32_t torque) {
     const bool ok = check(torque);
-    if (ok) {
+    if (ok && controls_allowed_) {
       last_ = torque;
     } else {
-      ++violations_;
+      last_ = 0;  // rejected or not allowed: judge the next command against 0, not a stale value
+      if (!ok) ++violations_;
     }
     return ok;
   }

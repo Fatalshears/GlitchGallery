@@ -106,7 +106,7 @@ Cookbook: [[http-streaming-in-python]] · [[python-threads-and-asyncio]] · [[no
 > Full file (≈90 lines) includes retry with jittered backoff. Smoke-tested by `examples/download-manager/smoke_test.sh`.
 
 > [!tested] Python reference — `examples/download-manager/python/minidm/downloader.py`
-> Segmented + resumable + rate-limited + checksum-verified, standard library only. 20 pytest cases including dropped connections, 503 retries, pause/resume, and remote file changes.
+> Segmented + resumable + rate-limited + checksum-verified, standard library only. 21 pytest cases including dropped connections (also in the no-range single-stream fallback), 503 retries, pause/resume, and remote file changes; plus a SIGKILL-at-random-moments check and a 300-case random pause/fault fuzz run during review.
 
 ## Error handling and edge cases
 
@@ -118,7 +118,7 @@ Cookbook: [[http-streaming-in-python]] · [[python-threads-and-asyncio]] · [[no
 | Server caps connections per IP | `429`, `503`, or resets | back off; reduce connections dynamically |
 | Redirect to signed CDN URL that expires | `403` mid-download | re-resolve the original URL, keep the validator check |
 | Wrong `Content-Range` start | data would land at wrong offset | verify `start` in each 206 response |
-| Connection closes early | fewer bytes than requested | treat as transient; resume from last written byte |
+| Connection closes early | fewer bytes than requested | treat as transient; resume from last written byte. In single-stream mode compare the received size with `Content-Length` — `urllib` does not report a short body ([[http-streaming-in-python]]) |
 
 ## Testing and debugging
 

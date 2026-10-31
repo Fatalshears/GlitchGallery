@@ -65,12 +65,12 @@ def test_kalman_estimates_relative_speed_from_noisy_range():
     assert abs(np.mean(innovations[100:])) < 0.2  # unbiased once converged
 
 
-def drive(lead_accel, seconds=30.0, gap=50.0, v=25.0, v_lead=25.0):
+def drive(lead_accel, seconds=30.0, gap=50.0, v=25.0, v_lead=25.0, v_set=None):
     mpc, dt = FollowMPC(), 0.1
     car = Longitudinal(gap=gap, v_ego=v, v_lead=v_lead)
     a_cmd, trace = 0.0, []
     for i in range(int(seconds / dt)):
-        a_cmd = mpc.step(car.gap, car.v_ego, car.v_lead, a_prev=a_cmd)
+        a_cmd = mpc.step(car.gap, car.v_ego, car.v_lead, a_prev=a_cmd, v_set=v_set)
         car.step(a_cmd, lead_accel(i * dt), dt)
         trace.append((car.gap, car.v_ego, a_cmd))
     return np.array(trace)
@@ -104,3 +104,37 @@ def test_lane_centering_converges_without_large_overshoot():
     ys = np.array(ys)
     assert abs(ys[-1]) < 0.05
     assert ys.min() > -0.3  # overshoot below 30 cm
+
+
+@pytest.mark.parametrize("v,gap,seconds", [(20.0, 80.0, 25.0), (20.0, 120.0, 30.0), (25.0, 150.0, 35.0)])
+def test_mpc_stops_behind_a_stationary_car(v, gap, seconds):
+    # Physically avoidable at comfort braking: about 72 m needed from 20 m/s and 108 m from 25 m/s
+    # (jerk ramp and actuator lag included). A symmetric gap cost with a 4 s horizon used to
+    # drive through the stopped car in all of these cases.
+    tr = drive(lambda t: 0.0, seconds=seconds, gap=gap, v=v, v_lead=0.0)
+    gaps, speeds, accels = tr[:, 0], tr[:, 1], tr[:, 2]
+    assert gaps.min() > 3.5  # stops at the 4 m standstill gap, never closer
+    assert speeds[-1] == pytest.approx(0.0, abs=0.1)
+    assert accels.min() >= -3.5 - 1e-9 and (np.abs(np.diff(accels)) / 0.1).max() <= 4.0 + 1e-9
+
+
+def test_mpc_never_exceeds_the_set_speed():
+    tr = drive(lambda t: 0.0, seconds=30.0, gap=300.0, v=15.0, v_lead=40.0, v_set=25.0)
+    assert tr[:, 1].max() <= 25.0 + 0.3
+    assert tr[-1, 1] == pytest.approx(25.0, abs=0.3)
+
+
+def test_unavoidable_collision_brakes_at_the_comfort_limit_and_reduces_impact_speed():
+    # 25 m/s towards a stopped car 45 m ahead: comfort braking cannot stop in time (needs ~112 m).
+    tr = drive(lambda t: 0.0, seconds=15.0, gap=45.0, v=25.0, v_lead=0.0)
+    assert tr[:, 2].min() == pytest.approx(-3.5, abs=1e-6)  # uses all the braking it is allowed
+    impact = np.argmax(tr[:, 0] <= 0)
+    assert tr[impact, 0] <= 0 and tr[impact, 1] < 22.0  # a collision, but slower than coasting at 25 m/s
+    # Beyond comfort braking is a separate emergency-braking function (AEB), not part of this planner.
+
+
+def test_mpc_rejects_non_finite_inputs():
+    mpc = FollowMPC()
+    for bad in [(float("nan"), 10.0, 10.0), (10.0, float("inf"), 10.0), (10.0, 10.0, float("nan"))]:
+        with pytest.raises(ValueError):
+            mpc.step(*bad)

@@ -26,7 +26,7 @@ Rule of thumb: standard library for tools that must run anywhere; `httpx` for ap
 > [!mwe] Stream a file to disk with urllib (constant memory)
 > - **Used for:** Downloading a file of any size with only the standard library and constant memory.
 > - **Input:** The URL in the snippet.
-> - **Expected output:** A file `LICENSE.txt` in the current directory (13 804 bytes at the time of writing); nothing is printed.
+> - **Expected output:** A file `LICENSE.txt` in the current directory (13 804 bytes at the time of writing); nothing is printed. Raises `ConnectionError` if the connection is cut before `Content-Length` bytes arrived.
 >
 > ```python
 > import shutil, urllib.request
@@ -35,6 +35,9 @@ Rule of thumb: standard library for tools that must run anywhere; `httpx` for ap
 >                              headers={"User-Agent": "learn/1.0"})
 > with urllib.request.urlopen(req, timeout=30) as resp, open("LICENSE.txt", "wb") as out:
 >     shutil.copyfileobj(resp, out, length=64 * 1024)
+>     expected = resp.headers.get("Content-Length")
+>     if expected is not None and out.tell() != int(expected):      # see Gotchas: urllib hides short bodies
+>         raise ConnectionError(f"got {out.tell()} of {expected} bytes")
 > ```
 
 > [!mwe] Range request and status handling with urllib
@@ -86,7 +89,7 @@ Rule of thumb: standard library for tools that must run anywhere; `httpx` for ap
 - **Redirects:** `urllib` follows them automatically; `httpx` does not unless `follow_redirects=True`.
 - **Compression:** `httpx`/`requests` send `Accept-Encoding: gzip, deflate` and transparently decode; byte ranges then refer to compressed bytes. Send `Accept-Encoding: identity` for downloads.
 - **`resp.read()` without a size** loads the whole body into memory.
-- **Premature EOF:** if the server closes early, `urllib` raises `http.client.IncompleteRead`; `httpx` raises `httpx.RemoteProtocolError`. Treat both as transient.
+- **Premature EOF:** `httpx` raises `httpx.RemoteProtocolError` and `requests` raises `ChunkedEncodingError` when the server closes before the body is complete, but **`urllib` does not**: `resp.read(n)` (and therefore `shutil.copyfileobj`) returns `b""` exactly as at a normal end, so a truncated download looks finished (only a bare `resp.read()` raises `http.client.IncompleteRead`). Compare the bytes received with `Content-Length` yourself, as the recipe above and `minidm` do, and treat a mismatch as a transient error. Checked with Python 3.13.
 - **Connection reuse:** create one `httpx.Client` and reuse it; a new client per request repeats TCP + TLS handshakes.
 
 ## Testing

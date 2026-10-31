@@ -72,6 +72,7 @@ Patterns that make code safety-friendly:
 
 ## Error handling and edge cases
 
+- **Stale state in monitors:** a monitor that remembers the last accepted value must forget it when it stops accepting (disengage, fault), or the first command after recovery is judged against a value the actuator never saw.
 - Common-cause failures (same bug in "redundant" copies) — diversity of implementation helps (the C++/Python safety twins here are a small illustration).
 - Degraded sensors — detect, inform the driver, reduce capability.
 - Human factors — alerts must be timely and understandable; takeover takes seconds.

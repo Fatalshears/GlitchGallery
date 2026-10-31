@@ -244,6 +244,8 @@ class Downloader:
             try:
                 self._downloaded = 0
                 with urllib.request.urlopen(self._request({}), timeout=self.opts.timeout) as resp:
+                    expected = resp.headers.get("Content-Length")
+                    written = 0
                     with open(self.part_path, "wb") as f:
                         while chunk := resp.read(self.opts.chunk_size):
                             if self.stop.is_set():
@@ -251,9 +253,14 @@ class Downloader:
                             if self.bucket:
                                 self.bucket.consume(len(chunk))
                             f.write(chunk)
+                            written += len(chunk)
                             self._report(len(chunk))
                         f.flush()
                         os.fsync(f.fileno())
+                    # http.client's read(amt) returns b"" at a premature EOF instead of raising,
+                    # so a cut connection looks like a finished body. Compare with Content-Length.
+                    if expected is not None and written != int(expected):
+                        raise ConnectionError(f"connection closed after {written} of {expected} bytes")
                 break
             except urllib.error.HTTPError as e:
                 if e.code not in TRANSIENT_HTTP:

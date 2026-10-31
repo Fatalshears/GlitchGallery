@@ -23,14 +23,14 @@ export async function importKey(k: string): Promise<CryptoKey> {
 }
 
 /** Encrypt any JSON value. A fresh 12-byte IV per message is required for AES-GCM security. */
-export async function encryptJSON(key: CryptoKey, value: unknown): Promise<{ iv: Uint8Array; data: Uint8Array }> {
+export async function encryptJSON(key: CryptoKey, value: unknown) {  // return type inferred: Uint8Array<ArrayBuffer> on TS >= 5.7
   const iv = globalThis.crypto.getRandomValues(new Uint8Array(12));
   const plain = new TextEncoder().encode(JSON.stringify(value));
   return { iv, data: new Uint8Array(await subtle.encrypt({ name: "AES-GCM", iv }, key, plain)) };
 }
 
 /** Throws (OperationError) if the key is wrong or the ciphertext was tampered with. */
-export async function decryptJSON<T>(key: CryptoKey, iv: Uint8Array, data: Uint8Array): Promise<T> {
+export async function decryptJSON<T>(key: CryptoKey, iv: BufferSource, data: BufferSource): Promise<T> {
   const plain = await subtle.decrypt({ name: "AES-GCM", iv }, key, data);
   return JSON.parse(new TextDecoder().decode(plain)) as T;
 }

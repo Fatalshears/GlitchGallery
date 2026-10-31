@@ -3,6 +3,7 @@
 //
 // Run (with the relay running): node collab-demo.ts [ws://localhost:3002]
 
+import { isDeepStrictEqual } from "node:util";
 import {
   Scene, decryptJSON, encryptJSON, exportKey, generateKey, importKey, newElement, updateElement,
   type Element,
@@ -58,8 +59,7 @@ alice.scene.put(circle);
 await Promise.all([broadcast(alice, [aliceMove, circle]), broadcast(bob, [bobResize])]);
 await new Promise((r) => setTimeout(r, 300));
 
-const snapshot = (s: Scene) => JSON.stringify(s.elements);
-const same = snapshot(alice.scene) === snapshot(bob.scene);
+const same = isDeepStrictEqual(alice.scene.elements, bob.scene.elements); // content, not key order
 console.log(`alice: ${alice.scene.elements.map((e) => `${e.id}@x=${e.x},w=${e.width}`).join(" ")}`);
 console.log(`bob:   ${bob.scene.elements.map((e) => `${e.id}@x=${e.x},w=${e.width}`).join(" ")}`);
 console.log(same ? "converged: both clients show the same scene" : "DIVERGED");

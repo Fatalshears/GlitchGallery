@@ -1,6 +1,6 @@
 // The scene: element store + spatial index + z-order, and JSON/SVG export.
 
-import { type Element, elementBounds, hitTest, outline } from "./elements.ts";
+import { type Element, elementBounds, hitTest, outline, parseElement } from "./elements.ts";
 import { byIndex, keyBetween } from "./fractional.ts";
 import { type Box, type Point, boxContains } from "./geometry.ts";
 import { sketchyLine } from "./random.ts";
@@ -39,9 +39,20 @@ export class Scene {
     else this.index.insert(el.id, elementBounds(el));
   }
 
-  /** Apply collaborators' elements with last-writer-wins; returns ids that changed. */
-  applyRemote(remote: Element[], editingId?: string): string[] {
-    const merged = reconcile(this.els, remote, { editingId });
+  /**
+   * Apply collaborators' elements with last-writer-wins; returns ids that changed.
+   * Remote data is untrusted: malformed elements are skipped, valid ones still apply.
+   */
+  applyRemote(remote: readonly unknown[], editingId?: string): string[] {
+    const valid: Element[] = [];
+    for (const raw of remote) {
+      try {
+        valid.push(parseElement(raw));
+      } catch {
+        // ignore: a buggy or malicious peer must not crash or corrupt this client
+      }
+    }
+    const merged = reconcile(this.els, valid, { editingId });
     const changed: string[] = [];
     for (const [id, el] of merged) {
       if (this.els.get(id) !== el) {
@@ -79,7 +90,13 @@ export class Scene {
       throw new Error(`unsupported file version ${data.version}`);
     if (!Array.isArray(data.elements)) throw new Error("missing elements array");
     const scene = new Scene();
-    for (const el of data.elements as Element[]) scene.put(el);
+    for (const [i, raw] of (data.elements as unknown[]).entries()) {
+      try {
+        scene.put(parseElement(raw));
+      } catch (err) {
+        throw new Error(`element ${i}: ${(err as Error).message}`);
+      }
+    }
     return scene;
   }
 
@@ -101,9 +118,11 @@ export class Scene {
         .map(([a, b], i) => sketchyLine(a, b, el.seed + i))
         .map((line) => "M" + line.map((p) => `${fmt(p.x - minX)} ${fmt(p.y - minY)}`).join(" L"))
         .join(" ");
-      return el.type === "ellipse"
-        ? `<ellipse cx="${fmt(el.x + el.width / 2 - minX)}" cy="${fmt(el.y + el.height / 2 - minY)}" rx="${fmt(el.width / 2)}" ry="${fmt(el.height / 2)}" fill="none" stroke="#1e1e1e"/>`
-        : `<path d="${d}" fill="none" stroke="#1e1e1e" stroke-linecap="round"/>`;
+      if (el.type !== "ellipse") return `<path d="${d}" fill="none" stroke="#1e1e1e" stroke-linecap="round"/>`;
+      const cx = fmt(el.x + el.width / 2 - minX);
+      const cy = fmt(el.y + el.height / 2 - minY);
+      const rot = el.angle ? ` transform="rotate(${fmt((el.angle * 180) / Math.PI)} ${cx} ${cy})"` : "";
+      return `<ellipse cx="${cx}" cy="${cy}" rx="${fmt(el.width / 2)}" ry="${fmt(el.height / 2)}"${rot} fill="none" stroke="#1e1e1e"/>`;
     });
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${fmt(w)}" height="${fmt(h)}" viewBox="0 0 ${fmt(w)} ${fmt(h)}">${paths.join("")}</svg>`;
   }

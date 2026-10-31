@@ -90,4 +90,4 @@ stateDiagram-v2
 
 - EU Regulation 2019/2144 (General Safety Regulation), driver drowsiness and attention warning.
 - Euro NCAP, *Driver Engagement* protocols — https://www.euroncap.com/en/for-engineers/protocols/
-- openpilot driver monitoring — https://github.com/commaai/openpilot/tree/master/selfdrive/monitoring
+- openpilot driver monitoring (directory `selfdrive/monitoring` in the repository) — https://github.com/commaai/openpilot

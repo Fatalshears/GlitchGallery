@@ -89,6 +89,6 @@ Levels formula used here: `t = clamp((v − black) / (white − black), 0, 1) ^ 
 
 ## References
 
-- Adobe, *Levels adjustment* — https://helpx.adobe.com/photoshop/using/levels-adjustment.html
-- Adobe, *Curves adjustment* — https://helpx.adobe.com/photoshop/using/curves-adjustment.html
+- Adobe, *Levels adjustment* — https://helpx.adobe.com/photoshop/user-guide.html
+- Adobe, *Curves adjustment* — https://helpx.adobe.com/photoshop/user-guide.html
 - Monotone cubic interpolation — https://en.wikipedia.org/wiki/Monotone_cubic_interpolation

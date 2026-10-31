@@ -38,10 +38,15 @@ class SafetyChecker:
     def allow_steer(self, torque: int) -> bool:
         """True if the command may be forwarded. Blocked commands are not sent."""
         ok = self._check(torque)
-        if ok:
+        if ok and self.controls_allowed:
             self.last_torque = torque
         else:
-            self.violations += 1
+            # Rejected, or controls not allowed: nothing (or only zero) reached the car, so the
+            # next command must be judged against 0 — not against a stale value that would let
+            # the torque jump straight back after a re-engagement. (Same rule as comma's panda.)
+            self.last_torque = 0
+            if not ok:
+                self.violations += 1
         return ok
 
     def _check(self, torque: int) -> bool:

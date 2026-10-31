@@ -67,6 +67,7 @@ Libraries: lodash `throttle`/`debounce`; RxJS `throttleTime`/`debounceTime`.
 ## Error handling and edge cases
 
 - Lost final value: a throttle without a trailing call drops the last cursor position — the cursor freezes slightly off.
+- Stale trailing value: if a new call takes the leading edge while an older one is still pending, the pending one must be discarded, or it is delivered *after* the newer value and the cursor jumps backwards (found by testing sketchkit's `throttle`).
 - Pending debounced saves on page close: flush on `visibilitychange`/`pagehide`.
 - `this` and argument handling when wrapping methods.
 - Timers in background tabs are slowed by browsers (often to ≥ 1 s).

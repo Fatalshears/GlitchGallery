@@ -103,4 +103,4 @@ Production tools: **cantools** and **python-can** ([[can-bus-in-python]]), opend
 - opendbc — https://github.com/commaai/opendbc
 - cantools — https://cantools.readthedocs.io/
 - CSS Electronics, *CAN bus explained* and *DBC file explained* — https://www.csselectronics.com/pages/can-dbc-file-database-intro
-- cabana (in openpilot `tools/cabana`) — https://github.com/commaai/openpilot/tree/master/tools/cabana
+- cabana (in openpilot `tools/cabana`) (directory `tools/cabana` in the repository) — https://github.com/commaai/openpilot

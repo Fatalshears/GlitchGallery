@@ -80,7 +80,7 @@ flowchart TD
 > [!tested] End-to-end demo — `examples/whiteboard/typescript/relay/`
 > - **Used for:** Watching two real clients edit the same element concurrently through an encrypted WebSocket relay.
 > - **Input:** None; the smoke test starts the relay on a random port and runs `collab-demo.ts`.
-> - **Expected output:** Both clients print the same scene (e.g. `box@x=40,w=100 circle@x=200,w=50`) and `converged: both clients show the same scene`. Note that one of the two concurrent edits (the resize) is lost — per-element LWW keeps one whole version.
+> - **Expected output:** Both clients print the same scene and `converged: both clients show the same scene`. The box is either `box@x=40,w=100` (Alice's move survived) or `box@x=0,w=300` (Bob's resize survived), with `circle@x=200,w=50` in both cases. Which one wins is decided by the random `versionNonce`, so it can differ from run to run — but never between the two clients. One of the two concurrent edits is always lost: per-element LWW keeps one whole version.
 >
 > ```bash
 > examples/whiteboard/smoke_test.sh
@@ -104,7 +104,7 @@ flowchart TD
 
 - LWW is simple, needs no server logic, and is good enough for whole-shape edits; text editing needs OT/CRDT.
 - A relay with no persistence means a room exists only while someone is connected; persistence needs encrypted storage.
-- Trusting clients: any participant can broadcast junk; validate element shapes before applying.
+- Trusting clients: any participant can broadcast junk. `Scene.applyRemote` validates every incoming element with `parseElement` and skips malformed ones; it cannot stop a well-formed but hostile update (e.g. an absurdly high `version`), which needs room-level trust or server-side rules.
 
 ## Competency checklist
 
