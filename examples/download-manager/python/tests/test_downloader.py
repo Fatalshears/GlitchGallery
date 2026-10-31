@@ -41,6 +41,15 @@ def test_falls_back_to_single_stream_without_range_support(server, tmp_path):
     assert dest.read_bytes() == BODY
 
 
+def test_truncated_single_stream_is_retried_not_accepted(server, tmp_path):
+    # No range support: the only way to survive a cut connection is to notice the short body.
+    server.body, server.support_ranges = BODY, False
+    server.drop_after, server.drops = 50_000, 3  # cuts the probe and the first two downloads
+    dest = tmp_path / "out.bin"
+    assert Downloader(server.url, str(dest), fast_opts()).run()
+    assert dest.read_bytes() == BODY  # used to be a silently truncated 50 000-byte file
+
+
 def test_dropped_connections_are_retried_and_resumed(server, tmp_path):
     server.body = BODY
     server.drop_after, server.drops = 50_000, 3

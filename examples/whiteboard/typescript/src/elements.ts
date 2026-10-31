@@ -38,6 +38,53 @@ export function updateElement(el: Element, changes: Partial<Element>, random: Ra
   return { ...el, ...changes, version: el.version + 1, versionNonce: Math.floor(random() * 2 ** 31) };
 }
 
+// Default only when a field is absent; an explicit null (what JSON makes of Infinity/NaN) is an error.
+const orDefault = <T>(v: unknown, d: T): unknown => (v === undefined ? d : v);
+
+const finite = (v: unknown, name: string): number => {
+  if (typeof v !== "number" || !Number.isFinite(v)) throw new Error(`${name} must be a finite number`);
+  return v;
+};
+
+/**
+ * Validate untrusted data (a loaded file or a collaborator's message) and return a clean Element.
+ * Missing optional fields get defaults (so older files keep loading); wrong types and
+ * non-finite numbers throw. Unknown element types are kept so data from newer versions survives.
+ */
+export function parseElement(raw: unknown): Element {
+  if (typeof raw !== "object" || raw === null) throw new Error("element must be an object");
+  const r = raw as Record<string, unknown>;
+  if (typeof r.id !== "string" || r.id === "" || r.id.length > 128) throw new Error("id must be a non-empty string");
+  if (typeof r.type !== "string") throw new Error("type must be a string");
+  const rawPoints = orDefault(r.points, []);
+  if (!Array.isArray(rawPoints) || rawPoints.length > 100_000) throw new Error("points must be an array");
+  const points = rawPoints.map((p, i) => {
+    if (typeof p !== "object" || p === null) throw new Error(`points[${i}] must be an object`);
+    return { x: finite((p as Record<string, unknown>).x, `points[${i}].x`), y: finite((p as Record<string, unknown>).y, `points[${i}].y`) };
+  });
+  const version = orDefault(r.version, 1);
+  if (typeof version !== "number" || !Number.isSafeInteger(version) || version < 1) throw new Error("version must be a positive integer");
+  const isDeleted = orDefault(r.isDeleted, false);
+  if (typeof isDeleted !== "boolean") throw new Error("isDeleted must be a boolean");
+  const index = orDefault(r.index, "V");
+  if (typeof index !== "string") throw new Error("index must be a string");
+  return {
+    id: r.id,
+    type: r.type as ElementType,
+    x: finite(r.x, "x"),
+    y: finite(r.y, "y"),
+    width: finite(orDefault(r.width, 0), "width"),
+    height: finite(orDefault(r.height, 0), "height"),
+    angle: finite(orDefault(r.angle, 0), "angle"),
+    points,
+    seed: finite(orDefault(r.seed, 0), "seed"),
+    version,
+    versionNonce: finite(orDefault(r.versionNonce, 0), "versionNonce"),
+    index,
+    isDeleted,
+  };
+}
+
 export const center = (el: Element): Point => ({ x: el.x + el.width / 2, y: el.y + el.height / 2 });
 
 /** Corners (rectangle) or absolute points (line/freedraw) after rotation. */
@@ -86,5 +133,7 @@ export function hitTest(el: Element, p: Point, tolerance = 4): boolean {
       // A closed freehand loop also counts as hit inside it.
       return el.type === "freedraw" && pts.length > 2 && pointInPolygon(q, pts);
     }
+    default:
+      return false; // element type from a newer version: keep it, but it cannot be picked
   }
 }

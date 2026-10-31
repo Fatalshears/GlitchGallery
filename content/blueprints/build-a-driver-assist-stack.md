@@ -32,8 +32,8 @@ flowchart TD
 | M1 | Plants to test against | [[fixed-rate-control-loops]] | deterministic step functions with explicit `dt` |
 | M2 | Feedback control | [[pid-controller]], [[lane-centering]] | P leaves offset, PI removes it; anti-windup 3× faster recovery; lane offset < 5 cm |
 | M3 | Estimation | [[kalman-filter]] | relative speed within 0.3 m/s from range only; P stays SPD |
-| M4 | Planning | [[model-predictive-control]], [[adaptive-cruise-control]] | no collision when lead brakes; limits and jerk ≤ 4 m/s³ hold |
-| M5 | Safety | [[functional-safety]], [[independent-safety-layer]], [[finite-state-machine]] | random commands never yield an unsafe forwarded sequence; brake wins |
+| M4 | Planning | [[model-predictive-control]], [[adaptive-cruise-control]] | no collision when the lead brakes; stops behind a **stopped** car 80–200 m ahead; never exceeds the set speed; limits and jerk ≤ 4 m/s³ hold |
+| M5 | Safety | [[functional-safety]], [[independent-safety-layer]], [[finite-state-machine]] | random commands never yield an unsafe forwarded sequence; brake wins; re-engaging cannot jump back to a stale torque |
 | M6 | Messaging | [[publish-subscribe-messaging]], [[ring-buffer]] | dropped counts exact; stale topic detected within 2.5 periods |
 | M7 | Regression safety net | [[record-and-replay-testing]], [[drive-logging-and-replay]] | replay passes; an intentional change shows a readable diff |
 | M8 | Systems language | [[realtime-cpp]] | C++ and Python agree on 50 000 decisions; TSan and UBSan clean |
@@ -73,11 +73,11 @@ Constant-velocity model `[gap, relative speed]`, range-only measurements. Valida
 
 ### M4 — MPC
 
-Linear prediction, quadratic cost on gap, speed, acceleration and jerk; box constraints on acceleration; projected-gradient solver; apply the first action; add a hard jerk rate limit after the optimizer (drivekit's tests showed the jerk *cost* alone allowed 6 m/s³).
+Linear prediction over a 10 s horizon; cost = track the set speed + acceleration + jerk, plus a heavy **one-sided** penalty on a predicted gap below the desired one; box constraints on acceleration; accelerated projected-gradient solver; apply the first action; add a hard jerk rate limit after the optimizer (the jerk *cost* alone allowed 6 m/s³). Write the stopped-obstacle test first: a 4 s horizon with a symmetric gap cost passes every following test and still drives through a stopped car 120 m ahead.
 
 ### M5 — Safety
 
-Grant control only on the rising edge of engagement; revoke on brake; check magnitude and asymmetric rate limits; prove with randomized command streams that the *forwarded* sequence is always within limits.
+Grant control only on the rising edge of engagement; revoke on brake; check magnitude and asymmetric rate limits; reset the remembered torque to 0 whenever a command is rejected or controls are not allowed; prove with randomized command streams that the *forwarded* sequence is always within limits.
 
 ### M6 — Messaging
 
@@ -96,7 +96,7 @@ Port the safety checker without heap or exceptions; generate a random event stre
 > [!tested] `examples/driver-assist/` — `drivekit` (Python) and C++ twins
 > - **Used for:** Comparing your milestones with a tested solution.
 > - **Input:** Python 3.10+ with numpy and pytest; g++ with C++17 and ThreadSanitizer support for the smoke test.
-> - **Expected output:** `23 passed` from pytest; the smoke test prints `spsc_ring: 2000000 messages delivered in order` (twice, the second under TSan), `C++ and Python agree on every decision` and `smoke tests passed`.
+> - **Expected output:** `31 passed` from pytest (about 30 s: the MPC runs closed-loop scenarios); the smoke test prints `spsc_ring: 2000000 messages delivered in order` (twice, the second under TSan), `C++ and Python agree on every decision` and `smoke tests passed`.
 >
 > ```bash
 > cd examples/driver-assist/python && python -m pytest -q

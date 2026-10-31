@@ -1,0 +1,6 @@
+{
+  "name": "image-editor-typescript-examples",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.18" }
+}

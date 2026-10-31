@@ -45,7 +45,7 @@ flowchart LR
 > [!tested] TypeScript — `Scene.toJSON`, `Scene.fromJSON`, `Scene.toSVG` in `src/scene.ts`
 > - **Used for:** Saving, loading with validation, and exporting a hand-drawn SVG.
 > - **Input:** A scene; for loading, the file's text.
-> - **Expected output:** JSON with `type: "sketchkit"`, `version: 1` and the live elements; `fromJSON` returns an equal scene or throws `not a sketchkit file` / `unsupported file version 99`; `toSVG` returns the same SVG string on every call.
+> - **Expected output:** JSON with `type: "sketchkit"`, `version: 1` and the live elements; `fromJSON` returns an equal scene or throws `not a sketchkit file`, `unsupported file version 99` or `element 3: x must be a finite number` (every element is validated; missing optional fields get defaults, unknown element types are kept); `toSVG` returns the same SVG string on every call, with rotated ellipses carrying a `transform="rotate(...)"`.
 >
 > ```ts
 > import { Scene } from "./src/scene.ts";
@@ -56,7 +56,7 @@ flowchart LR
 > const restored = Scene.fromJSON(localStorage.getItem("scene") ?? '{"type":"sketchkit","version":1,"elements":[]}');
 > download("drawing.svg", restored.toSVG());
 > ```
-> Tests: `JSON round trip and validation`, `SVG export is deterministic and hand-drawn`, `debounce: one call after the burst ends`.
+> Tests: `JSON round trip and validation`, `loading validates every element, not only the file header`, `SVG export is deterministic and hand-drawn`, `SVG export keeps the rotation of ellipses`, `debounce: one call after the burst ends`.
 
 - **PNG export in the browser:** draw the scene on an `OffscreenCanvas` sized to the content bounds × scale, then `canvas.convertToBlob({ type: "image/png" })`.
 - **Embedding the scene** (as Excalidraw does): store the JSON in a PNG `tEXt` chunk or an SVG `<metadata>` element; on import, look for it before treating the file as a plain image.

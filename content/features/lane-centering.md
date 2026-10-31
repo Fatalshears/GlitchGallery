@@ -94,5 +94,5 @@ flowchart LR
 ## References
 
 - Snider, *Automatic Steering Methods for Autonomous Automobile Path Tracking* (CMU, 2009) — pure pursuit, Stanley.
-- openpilot lateral controllers (PID, torque, angle) — https://github.com/commaai/openpilot/tree/master/selfdrive/controls/lib
+- openpilot lateral controllers (PID, torque, angle) (directory `selfdrive/controls/lib` in the repository) — https://github.com/commaai/openpilot
 - Rajamani, *Vehicle Dynamics and Control* (bicycle model).

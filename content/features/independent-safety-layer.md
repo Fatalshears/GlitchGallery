@@ -59,7 +59,7 @@ sequenceDiagram
 > [!tested] Python — `drivekit/safety.py` (C++ twin: `examples/driver-assist/cpp/safety.hpp`)
 > - **Used for:** Deciding, per outgoing steering command, whether it may reach the car.
 > - **Input:** Brake and cruise events from the car; requested torque values every frame.
-> - **Expected output:** Nonzero torque is blocked until cruise engages; braking blocks everything until a *new* engagement; a jump of 11 units from 0 is blocked (rate up 10); relaxing by 25 is allowed; torque above 1500 is blocked. Over 20 000 random commands, the forwarded sequence never violates the limits.
+> - **Expected output:** Nonzero torque is blocked until cruise engages; braking blocks everything until a *new* engagement; a jump of 11 units from 0 is blocked (rate up 10); relaxing by 25 is allowed; torque above 1500 is blocked. After a rejection or a disengagement the next command is judged against 0 (so re-engaging cannot jump back to an old torque). Over 20 000 random commands, the forwarded sequence never violates the limits.
 >
 > ```python
 > from drivekit.safety import SafetyChecker
@@ -72,7 +72,7 @@ sequenceDiagram
 > s.on_brake(True)
 > s.allow_steer(10)       # False: driver braked
 > ```
-> Tests: `test_nothing_allowed_until_cruise_engages`, `test_brake_disengages_and_only_a_new_rising_edge_reengages`, `test_torque_and_rate_limits`, `test_well_behaved_controller_never_violates`, `test_random_commands_never_produce_an_unsafe_output_sequence`.
+> Tests: `test_nothing_allowed_until_cruise_engages`, `test_brake_disengages_and_only_a_new_rising_edge_reengages`, `test_torque_and_rate_limits`, `test_reengaging_cannot_jump_back_to_a_stale_torque`, `test_violation_resets_the_reference_to_zero`, `test_well_behaved_controller_never_violates`, `test_random_commands_never_produce_an_unsafe_output_sequence`.
 
 > [!tested] Cross-implementation check — `examples/driver-assist/smoke_test.sh`
 > - **Used for:** Proving the C++ safety checker and the Python one make identical decisions.
@@ -86,6 +86,7 @@ sequenceDiagram
 ## Error handling and edge cases
 
 - **Rising edge, not level:** if the car's cruise was already engaged when the safety code started, it must not grant control.
+- **Reset the reference after a rejection or disengagement.** Rate limits compare each command with the previous one that *reached the car*. If a blocked command (or a disengaged period) leaves the old value in place, re-engaging lets the torque jump straight back to it, with no ramp. comma's panda firmware sets its remembered torque to 0 whenever controls are not allowed or a command is rejected; drivekit's first version kept the stale value until a test of exactly this sequence failed (`test_reengaging_cannot_jump_back_to_a_stale_torque`).
 - **Direction changes** must pass through zero within the rate limits.
 - **Message timeouts:** if the expected status messages stop arriving, revoke control.
 - **Blocked ≠ disabled:** a blocked command is simply not sent; persistent violations should disengage via the main software.

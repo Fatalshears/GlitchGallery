@@ -128,11 +128,11 @@ One shared `TokenBucket` consumed after each chunk read. After completion, strea
 > [!tested] `examples/download-manager/python/` — `minidm`
 > - **Used for:** Running the reference implementation's test suite, then downloading a real file with its command-line interface.
 > - **Input:** None for the tests; for the CLI, a URL, a destination file name and `-c 4` (number of connections).
-> - **Expected output:** `20 passed` from pytest; the CLI prints progress percentages to stderr, then `done`, and `LICENSE.txt` (13 804 bytes at the time of writing) appears in the current directory.
+> - **Expected output:** `21 passed` from pytest; the CLI prints progress percentages to stderr, then `done`, and `LICENSE.txt` (13 804 bytes at the time of writing) appears in the current directory.
 >
 > ```bash
 > cd examples/download-manager/python
-> python -m pytest -q                                    # 20 tests
+> python -m pytest -q                                    # 21 tests
 > python -m minidm https://raw.githubusercontent.com/python/cpython/main/LICENSE LICENSE.txt -c 4
 > ```
 > | File | Milestones |

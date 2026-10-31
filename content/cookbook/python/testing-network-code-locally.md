@@ -74,7 +74,7 @@ Run all tests:
 
 - **Used for:** Running the reference implementation's tests locally.
 - **Input:** Python 3.10+.
-- **Expected output:** `20 passed in …s`.
+- **Expected output:** `21 passed in …s`.
 
 ```bash
 cd examples/download-manager/python

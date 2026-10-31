@@ -89,6 +89,6 @@ Libraries: `pytest-regressions`, `syrupy` (pytest snapshots), ApprovalTests, Jes
 
 ## References
 
-- openpilot process replay — https://github.com/commaai/openpilot/tree/master/selfdrive/test/process_replay
+- openpilot process replay (directory `selfdrive/test/process_replay` in the repository) — https://github.com/commaai/openpilot
 - `pytest-regressions` — https://pytest-regressions.readthedocs.io/
 - Approval Tests — https://approvaltests.com/

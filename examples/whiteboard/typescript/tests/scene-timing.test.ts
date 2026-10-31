@@ -91,3 +91,50 @@ test("debounce: one call after the burst ends", () => {
     mock.timers.reset();
   }
 });
+
+test("throttle never delivers an older value after a newer one", () => {
+  mock.timers.enable({ apis: ["setTimeout", "Date"] });
+  try {
+    const calls: number[] = [];
+    const t = throttle((n: number) => calls.push(n), 100);
+    t(1);
+    mock.timers.tick(50);
+    t(2); // pending: due at t=100
+    mock.timers.setTime(100); // time passes the interval but the timer has not run yet
+    t(3); // takes the leading edge and must cancel the stale pending 2
+    mock.timers.tick(100);
+    assert.deepEqual(calls, [1, 3]);
+  } finally {
+    mock.timers.reset();
+  }
+});
+
+test("SVG export keeps the rotation of ellipses", () => {
+  const s = new Scene();
+  s.put(newElement({ id: "e", type: "ellipse", x: 0, y: 0, width: 100, height: 40, angle: Math.PI / 2 }));
+  assert.match(s.toSVG(), /<ellipse [^>]*transform="rotate\(90(\.0+)? /);
+  const flat = new Scene();
+  flat.put(newElement({ id: "f", type: "ellipse", x: 0, y: 0, width: 100, height: 40 }));
+  assert.doesNotMatch(flat.toSVG(), /transform=/);
+});
+
+test("loading validates every element, not only the file header", () => {
+  const wrap = (el: unknown) => JSON.stringify({ type: "sketchkit", version: 1, elements: [el] });
+  const good = { id: "a", type: "rectangle", x: 1, y: 2, width: 3, height: 4 };
+  const scene = Scene.fromJSON(wrap(good)); // optional fields get defaults
+  assert.equal(scene.get("a")!.angle, 0);
+  assert.deepEqual(scene.get("a")!.points, []);
+  for (const bad of [null, 5, { type: "rectangle", x: 0, y: 0 }, { ...good, x: "1" }, { ...good, width: 1e999 },
+    { ...good, points: [{ x: 1 }] }, { ...good, points: "no" }, { ...good, version: 0.5 }, { ...good, isDeleted: "yes" }])
+    assert.throws(() => Scene.fromJSON(wrap(bad)), /element 0/, JSON.stringify(bad));
+  assert.doesNotThrow(() => Scene.fromJSON(wrap({ ...good, type: "future-shape" }))); // unknown types survive
+  assert.equal(Scene.fromJSON(wrap({ ...good, type: "future-shape" })).hit({ x: 2, y: 3 }), undefined); // but are not hit-testable
+});
+
+test("remote updates that are malformed are ignored, valid ones still apply", () => {
+  const s = new Scene();
+  const ok = newElement({ id: "ok", type: "rectangle", x: 0, y: 0, width: 10, height: 10 });
+  const changed = s.applyRemote([ok, { id: "x" }, null, { ...ok, id: "nan", x: NaN }] as never[]);
+  assert.deepEqual(changed, ["ok"]);
+  assert.equal(s.elements.length, 1);
+});

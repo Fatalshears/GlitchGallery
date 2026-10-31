@@ -92,6 +92,6 @@ An edit through a mask is a per-pixel blend: `result = original + mask × (edite
 
 ## References
 
-- Adobe, *Select with the Magic Wand tool* — https://helpx.adobe.com/photoshop/using/magic-wand-tool.html
+- Adobe, *Select with the Magic Wand tool* — https://helpx.adobe.com/photoshop/user-guide.html
 - Flood fill — https://en.wikipedia.org/wiki/Flood_fill
 - Marching squares — https://en.wikipedia.org/wiki/Marching_squares

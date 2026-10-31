@@ -130,4 +130,4 @@ Every other feature produces commands: [[brush-painting]], [[image-filters]], [[
 
 - Gamma et al., *Design Patterns* (1994), Command and Memento.
 - *Game Programming Patterns*, "Command" (includes undo) — https://gameprogrammingpatterns.com/command.html
-- Adobe, *Undo and history* (Photoshop user guide) — https://helpx.adobe.com/photoshop/using/undo-history.html
+- Adobe, *Undo and history* (Photoshop user guide) — https://helpx.adobe.com/photoshop/user-guide.html

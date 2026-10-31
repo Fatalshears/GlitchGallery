@@ -9,6 +9,11 @@ export function throttle<A extends unknown[]>(fn: (...args: A) => void, ms: numb
   return (...args: A) => {
     const now = Date.now();
     if (now - last >= ms) {
+      // A new leading call supersedes any pending trailing one; otherwise the stale value
+      // would be delivered after this newer one and (for cursors) jump backwards.
+      clearTimeout(timer);
+      timer = undefined;
+      pending = undefined;
       last = now;
       fn(...args);
     } else {

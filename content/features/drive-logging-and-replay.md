@@ -91,6 +91,6 @@ openpilot tools: `selfdrive/test/process_replay` (CI), `tools/replay` (replays a
 
 ## References
 
-- openpilot process replay — https://github.com/commaai/openpilot/tree/master/selfdrive/test/process_replay
-- openpilot tools (replay, PlotJuggler, cabana) — https://github.com/commaai/openpilot/tree/master/tools
+- openpilot process replay (directory `selfdrive/test/process_replay` in the repository) — https://github.com/commaai/openpilot
+- openpilot tools (replay, PlotJuggler, cabana) (directory `tools` in the repository) — https://github.com/commaai/openpilot
 - Michael Feathers, *Working Effectively with Legacy Code* (characterization tests).

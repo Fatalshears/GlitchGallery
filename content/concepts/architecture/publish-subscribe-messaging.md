@@ -99,6 +99,6 @@ Real systems: openpilot `cereal` (Cap'n Proto schemas) over `msgq` (shared-memor
 
 ## References
 
-- openpilot cereal (schemas and messaging; now inside the openpilot repo) — https://github.com/commaai/openpilot/tree/master/cereal
+- openpilot cereal (schemas and messaging; now inside the openpilot repo) (directory `cereal` in the repository) — https://github.com/commaai/openpilot
 - Cap'n Proto, *Schema language* — https://capnproto.org/language.html
 - ROS 2, *About topics* and QoS — https://docs.ros.org/en/rolling/Concepts/Basic/About-Topics.html
