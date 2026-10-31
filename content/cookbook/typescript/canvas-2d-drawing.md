@@ -92,21 +92,24 @@ This is the drawing layer of a whiteboard: a crisp canvas on high-DPI screens, a
 
 > [!mwe] Per-element bitmap cache
 > - **Used for:** Avoiding re-generating sketchy strokes on every pan or zoom frame.
-> - **Input:** An element `el` with `id` and `version`, and a function `paint(ctx, el)` that draws it at the origin.
-> - **Expected output:** `paint` runs once per element version; later frames reuse the cached bitmap through `drawImage`.
+> - **Input:** An element `el` and a function `paint(ctx, el)` that draws it in scene coordinates.
+> - **Expected output:** `paint` runs once per element version; later frames reuse the cached bitmap through `drawImage`. Works for lines and freehand strokes (whose `width`/`height` are 0) and rotated shapes, because the bitmap is sized from the rotated bounds.
 >
 > ```ts
-> const cache = new Map<string, { version: number; bmp: OffscreenCanvas }>();
-> function drawCached(ctx: CanvasRenderingContext2D, el: Element, pad = 4) {
+> import { type Element, elementBounds } from "./src/elements.ts";
+>
+> const cache = new Map<string, { version: number; bmp: OffscreenCanvas; x: number; y: number }>();
+> function drawCached(ctx: CanvasRenderingContext2D, el: Element, paint: (g: OffscreenCanvasRenderingContext2D, el: Element) => void, pad = 4) {
 >   let c = cache.get(el.id);
 >   if (!c || c.version !== el.version) {
->     const bmp = new OffscreenCanvas(Math.ceil(el.width + 2 * pad), Math.ceil(el.height + 2 * pad));
+>     const b = elementBounds(el);                                   // rotated, works for lines too
+>     const bmp = new OffscreenCanvas(Math.ceil(b.maxX - b.minX + 2 * pad), Math.ceil(b.maxY - b.minY + 2 * pad));
 >     const g = bmp.getContext("2d")!;
->     g.translate(pad - el.x, pad - el.y);
+>     g.translate(pad - b.minX, pad - b.minY);                      // scene coords -> bitmap coords
 >     paint(g, el);
->     cache.set(el.id, (c = { version: el.version, bmp }));
+>     cache.set(el.id, (c = { version: el.version, bmp, x: b.minX - pad, y: b.minY - pad }));
 >   }
->   ctx.drawImage(c.bmp, el.x - pad, el.y - pad);
+>   ctx.drawImage(c.bmp, c.x, c.y);
 > }
 > ```
 > The cache is in scene units, so it blurs at high zoom; real editors re-render at the current zoom level when it changes a lot.
