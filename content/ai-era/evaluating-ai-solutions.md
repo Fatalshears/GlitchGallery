@@ -84,7 +84,7 @@ Viết ngắn: bối cảnh, các phương án đã cân nhắc, phương án ch
 ## Dấu hiệu cảnh báo trong giải pháp AI
 
 - Gọi dịch vụ bên ngoài **không có timeout**, hoặc dùng timeout mặc định vô hạn. Xem [[senior-engineering-topics]].
-- **Retry mọi lỗi**, kể cả lỗi 4xx và thao tác không idempotent như tạo đơn hàng. Xem [[backend-development-topics]] và [[retry-with-exponential-backoff]].
+- **Retry mọi lỗi**, kể cả lỗi 4xx do request sai (khác với `429 Too Many Requests`, vốn nên retry theo `Retry-After`) và thao tác không idempotent như tạo đơn hàng. Xem [[backend-development-topics]] và [[retry-with-exponential-backoff]].
 - Retry ở nhiều layer cùng lúc, nhân số request lên nhiều lần khi hệ thống đang quá tải.
 - Đề xuất **microservices hoặc Kubernetes** cho một sản phẩm nhỏ, đội nhỏ, chưa có nhu cầu scale độc lập.
 - Giữ state (session, file upload) trong bộ nhớ của một instance rồi đặt sau load balancer nhiều instance.

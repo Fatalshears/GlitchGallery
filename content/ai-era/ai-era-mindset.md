@@ -18,7 +18,7 @@ AI coding assistant viết code theo một ngôn ngữ hay framework cụ thể 
 - Câu hỏi kiểu "hàm X của framework Y nhận tham số gì" mất dần ý nghĩa: AI và tài liệu trả lời tốt hơn trí nhớ.
 - Câu hỏi kiểu "giải pháp này **sai ở đâu khi có lỗi mạng**, **tốn bao nhiêu khi tải tăng 10 lần**, **có an toàn khi retry không**" trở nên quan trọng hơn. AI có thể đề xuất nhiều giải pháp, nhưng người chịu trách nhiệm chọn và vận hành giải pháp vẫn là kỹ sư.
 
-Kỳ vọng phổ biến của người phỏng vấn hiện nay có thể tóm lại một câu: **một kỹ sư có thể đánh giá trade-off của các giải pháp AI đề xuất, thay vì phụ thuộc vào những dòng code AI viết ra.**
+Một kỳ vọng ngày càng gặp nhiều ở người phỏng vấn có thể tóm lại một câu: **một kỹ sư có thể đánh giá trade-off của các giải pháp AI đề xuất, thay vì phụ thuộc vào những dòng code AI viết ra.**
 
 ```mermaid
 flowchart LR

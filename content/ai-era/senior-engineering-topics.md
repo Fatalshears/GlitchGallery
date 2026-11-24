@@ -81,6 +81,7 @@ Bạn có biết các giải pháp chính, trade-off của chúng, và quan tr�
 
 - **Choreography:** mỗi service phát event, service khác lắng nghe và làm bước tiếp. Ít ghép nối, nhưng khó theo dõi luồng khi có nhiều bước.
 - **Orchestration:** một orchestrator điều phối từng bước. Dễ hiểu và giám sát hơn, nhưng orchestrator là một thành phần cần vận hành.
+- Thứ tự các bước quan trọng: đặt bước **khó hoặc không thể hoàn tác** (gửi hàng, gửi email, gọi đối tác không hỗ trợ hoàn) ở cuối, sau khi các bước có thể thất bại đã thành công. Ví dụ dưới đây đặt trừ tiền trước giữ hàng nên phải hoàn tiền; nhiều hệ thống giữ hàng trước để tránh điều đó.
 - Nhược: chỉ đạt **eventual consistency**; **thiếu isolation** (người khác có thể thấy trạng thái trung gian), cần các biện pháp như semantic lock (trạng thái "đang xử lý"); compensating transaction phải idempotent và không phải lúc nào cũng hoàn tác được (email đã gửi).
 
 ```mermaid
@@ -132,13 +133,14 @@ Bạn có hiểu retry và timeout là con dao hai lưỡi: dùng đúng thì h�
 - **Chỉ retry thao tác idempotent**, hoặc thao tác có idempotency key.
 - **Exponential backoff kèm jitter** để các client không retry đồng loạt. Xem [[retry-with-exponential-backoff]].
 - **Giới hạn số lần và ngân sách retry** (retry budget), ví dụ bằng [[token-bucket]]: khi tỉ lệ lỗi cao, ngừng retry thay vì nhân tải lên dependency đang quá tải.
-- **Retry ở một layer**, không phải mọi layer. Ba layer mỗi layer retry 3 lần thì một request có thể thành 27 lần gọi tới tầng dưới cùng.
+- **Retry ở một layer**, không phải mọi layer. Ba layer nối tiếp, mỗi layer thử tối đa 3 lần (1 lần đầu và 2 lần retry), thì một request của người dùng có thể thành 3 × 3 × 3 = 27 lần gọi tới tầng dưới cùng.
+- **Tổng thời gian của các lần thử phải nằm trong deadline.** Với deadline 2 giây, timeout 800 ms và 3 lần thử thì đã quá 2,4 giây chưa kể backoff, nên các lần retry cuối là việc vô ích.
 - Kết hợp **circuit breaker** cho lỗi kéo dài ([[backend-development-topics]]).
 
 ```mermaid
 flowchart TB
   C[Client] -->|"deadline 2s"| A[Service A]
-  A -->|"timeout 800ms, retry tối đa 2,<br/>backoff + jitter"| B[Service B]
+  A -->|"timeout 500ms, tối đa 2 lần thử,<br/>backoff + jitter, trong deadline còn lại"| B[Service B]
   A -->|"circuit breaker"| P["Đối tác bên ngoài<br/>(chậm, không ổn định)"]
   B -->|"không retry ở đây"| DB[(Database)]
 ```
@@ -164,7 +166,7 @@ flowchart TB
   - `startupProbe`: cho ứng dụng khởi động chậm thời gian; các probe khác chờ nó thành công.
   - `readinessProbe`: thất bại thì Pod bị **loại khỏi endpoint của Service**, không nhận traffic, nhưng không bị restart.
   - `livenessProbe`: thất bại thì container bị **restart**. Cấu hình liveness kiểm tra cả database là lỗi phổ biến: database chậm khiến mọi Pod bị restart cùng lúc.
-- **Khi Pod bị dừng** (deploy mới, scale down, drain node): Pod chuyển sang trạng thái terminating và bị gỡ khỏi endpoint; hook `preStop` (nếu có) chạy; container nhận `SIGTERM`; sau `terminationGracePeriodSeconds` (mặc định 30 giây) mà chưa thoát thì bị `SIGKILL`. Việc gỡ endpoint diễn ra song song với `SIGTERM`, nên load balancer hoặc ingress có thể vẫn gửi request tới Pod trong chốc lát. Ứng dụng cần **graceful shutdown**: ngừng nhận request mới, xử lý xong request đang chạy, rồi thoát. Một `preStop` chờ vài giây là cách phổ biến để tránh mất request.
+- **Khi Pod bị dừng** (deploy mới, scale down, drain node): Pod được đánh dấu đang xóa (`kubectl` hiển thị `Terminating`, đây không phải một phase) và bị gỡ khỏi endpoint; hook `preStop` (nếu có) chạy xong thì container nhận `SIGTERM`; nếu sau `terminationGracePeriodSeconds` (mặc định 30 giây, **tính cả thời gian chạy `preStop`**) vẫn chưa thoát thì bị `SIGKILL`. Việc gỡ endpoint diễn ra song song với `SIGTERM`, nên load balancer hoặc ingress có thể vẫn gửi request tới Pod trong chốc lát. Ứng dụng cần **graceful shutdown**: ngừng nhận request mới, xử lý xong request đang chạy, rồi thoát. Một `preStop` chờ vài giây là cách phổ biến để tránh mất request.
 
 ```mermaid
 stateDiagram-v2
@@ -175,6 +177,7 @@ stateDiagram-v2
   Running --> Failed: container thoát lỗi, không restart
   Running --> Terminating: xóa Pod (deploy, scale down, drain)
   Terminating --> [*]: preStop, SIGTERM, hết grace period thì SIGKILL
+  note right of Terminating: không phải phase, chỉ là trạng thái kubectl hiển thị
 ```
 
 ### Quy trình xử lý sự cố 503
@@ -188,8 +191,8 @@ flowchart TB
   C -->|"Không có"| D{"Pod có Running và Ready?"}
   D -->|"Không Ready"| E["readinessProbe thất bại:<br/>describe pod, log, dependency"]
   D -->|"CrashLoopBackOff / Pending"| F["log --previous, events,<br/>tài nguyên, image"]
-  D -->|"Ready nhưng không có endpoint"| G["selector của Service<br/>không khớp label của Pod,<br/>sai port"]
-  C -->|"Có endpoint"| H["Kiểm tra cấu hình ingress,<br/>network policy, timeout"]
+  D -->|"Ready nhưng không có endpoint"| G["selector của Service<br/>không khớp label của Pod"]
+  C -->|"Có endpoint"| H["Kiểm tra targetPort có khớp<br/>port ứng dụng, cấu hình ingress,<br/>network policy, timeout"]
   B -->|"Ứng dụng trả 503"| I["Quá tải hoặc dependency lỗi:<br/>metric, log ứng dụng"]
   A --> J["Có deploy gần đây?<br/>rollout history, cân nhắc rollback"]
 ```
@@ -213,7 +216,8 @@ flowchart TB
 
 - Mọi Pod cùng không Ready: dependency chung (database) lỗi và readiness probe kiểm tra nó, hoặc bản deploy mới lỗi.
 - 503 ngắt quãng trong lúc deploy: thiếu graceful shutdown, `maxUnavailable` quá lớn, readiness probe đạt trước khi ứng dụng thật sự sẵn sàng.
-- Selector của Service không khớp label sau khi đổi manifest.
+- Selector của Service không khớp label sau khi đổi manifest (Service không có endpoint nào).
+- `targetPort` của Service không khớp port ứng dụng đang lắng nghe (có endpoint nhưng kết nối bị từ chối, tùy ingress có thể hiện thành `502` hoặc `503`).
 - Ứng dụng quá tải: HPA chưa kịp scale, hoặc giới hạn tài nguyên khiến container bị `OOMKilled` liên tục.
 
 **Sau sự cố:** viết postmortem không đổ lỗi, bổ sung alert cho tín hiệu đã bỏ sót (ví dụ số endpoint sẵn sàng của Service), và sửa nguyên nhân gốc.

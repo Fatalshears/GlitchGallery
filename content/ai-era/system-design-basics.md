@@ -33,7 +33,7 @@ Quan hệ giữa chúng:
 
 ### Câu hỏi đào sâu
 
-- Hệ thống có ba thành phần nối tiếp, mỗi thành phần 99,9%. Availability tổng khoảng bao nhiêu? (Khoảng 99,7%, vì nhân các xác suất: 0,999³.)
+- Hệ thống có ba thành phần nối tiếp, mỗi thành phần 99,9%. Availability tổng khoảng bao nhiêu? (Khoảng 99,7%: 0,999³ ≈ 0,997, với giả định các thành phần lỗi độc lập với nhau. Thành phần nối tiếp làm availability tổng **thấp hơn** thành phần yếu nhất.)
 - Graceful degradation là gì? Cho ví dụ trong một sản phẩm thương mại điện tử.
 
 ## Câu 2: Horizontal Scaling khác Vertical Scaling thế nào? Khi nào chọn cái nào?
@@ -57,8 +57,8 @@ flowchart LR
 
 | | Vertical | Horizontal |
 |---|---|---|
-| Thay đổi code | Thường không cần | Ứng dụng phải **stateless** hoặc tách state ra ngoài |
-| Giới hạn | Có trần phần cứng; giá tăng nhanh ở cấu hình cao | Gần như không có trần lý thuyết, nhưng gặp giới hạn ở thành phần dùng chung (database) |
+| Thay đổi code | Thường không cần, miễn ứng dụng tận dụng được nhiều CPU core (ứng dụng chỉ chạy một thread không nhanh hơn khi thêm core) | Ứng dụng phải **stateless** hoặc tách state ra ngoài |
+| Giới hạn | Có trần phần cứng; giá tăng nhanh ở cấu hình cao | Không bị trần của một máy, nhưng bị giới hạn bởi thành phần dùng chung (database, cache) và chi phí phối hợp giữa các instance |
 | Availability | Vẫn là một máy: single point of failure | Một instance chết, các instance khác vẫn phục vụ |
 | Độ phức tạp | Thấp | Cao hơn: load balancing, phân phối state, nhất quán dữ liệu |
 | Thời gian áp dụng | Thường cần restart | Có thể thêm instance khi đang chạy, tự động theo tải |
@@ -118,7 +118,7 @@ flowchart TB
 ### Lỗi hay gặp
 
 - Scale ngang tầng ứng dụng khi điểm nghẽn là database: thêm instance làm tăng số connection, khiến database chậm hơn.
-- Tăng timeout khi dependency chậm: request giữ tài nguyên lâu hơn, hệ thống sập nhanh hơn.
+- Tăng timeout khi dependency chậm vì quá tải: request giữ thread và connection lâu hơn, tài nguyên cạn nhanh hơn, dễ dẫn tới cascading failure.
 - Retry ở nhiều layer: một request của người dùng thành hàng chục request tới dependency đang quá tải (retry storm).
 - Chỉ nhìn latency trung bình: trung bình che giấu tail latency (p99) mà nhiều người dùng gặp.
 

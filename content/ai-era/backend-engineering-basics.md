@@ -111,8 +111,8 @@ sequenceDiagram
 
 ### Trade-off
 
-- Push giữ **nhiều kết nối mở**: tốn tài nguyên trên server, load balancer cần hỗ trợ kết nối lâu dài, scale ngang phức tạp hơn vì kết nối gắn với một instance (thường cần pub/sub giữa các instance, xem [[publish-subscribe-messaging]]).
-- Polling dễ scale và cache hơn, nhưng lãng phí băng thông và có độ trễ.
+- Long Polling, SSE và WebSocket đều giữ **nhiều kết nối mở** (Long Polling giữ từng request cho tới khi có dữ liệu hoặc hết timeout, nên RFC 6202 xếp nó vào nhóm kỹ thuật server push dù về hình thức vẫn là client hỏi): tốn tài nguyên trên server, load balancer cần hỗ trợ kết nối lâu dài, scale ngang phức tạp hơn vì kết nối gắn với một instance (thường cần pub/sub giữa các instance, xem [[publish-subscribe-messaging]]).
+- Short Polling dễ scale và cache hơn vì mỗi request ngắn và độc lập, nhưng lãng phí băng thông và có độ trễ tối đa bằng chu kỳ polling.
 - Mọi phương án push cần xử lý **mất kết nối**: kết nối lại với backoff ([[retry-with-exponential-backoff]]) và lấy lại các sự kiện bị lỡ.
 
 ### Câu hỏi đào sâu
@@ -192,7 +192,7 @@ flowchart LR
 ### Trade-off
 
 - Reverse proxy là một **điểm đi qua của mọi request**: cần chạy nhiều bản để tránh single point of failure, và thêm một chút latency.
-- Khi có proxy, địa chỉ client thật nằm trong header (`Forwarded` theo RFC 7239, hoặc `X-Forwarded-For` phổ biến trên thực tế). Ứng dụng chỉ nên tin header này nếu nó đến từ proxy của mình, nếu không client có thể giả mạo.
+- Khi có proxy, địa chỉ client thật nằm trong header (`Forwarded` theo RFC 7239, hoặc `X-Forwarded-For` phổ biến trên thực tế). Client có thể tự gửi header này với giá trị giả, nên ứng dụng chỉ được tin những phần do proxy của chính mình thêm vào (thường là các giá trị cuối danh sách), không tin giá trị đầu tiên một cách mặc định.
 
 ### Câu hỏi đào sâu
 

@@ -68,7 +68,7 @@ Bạn có chọn đúng loại lưu trữ cho từng loại dữ liệu: file ng
 | Đơn vị lưu trữ | Các block có kích thước cố định, hệ điều hành dựng file system lên trên | File và thư mục phân cấp | Object (dữ liệu + metadata) định danh bằng key trong một bucket, không gian phẳng |
 | Cách truy cập | Gắn vào máy như một ổ đĩa | Qua giao thức mạng như NFS, SMB; nhiều máy mount cùng lúc | Qua HTTP API (PUT, GET, DELETE) |
 | Chia sẻ giữa nhiều máy | Thường gắn vào một máy tại một thời điểm | Có, đó là mục đích chính | Có, mọi client có quyền đều truy cập qua API |
-| Sửa một phần dữ liệu | Có, ghi đè từng block, latency thấp | Có | Không sửa tại chỗ; ghi lại cả object (hoặc dùng multipart upload khi tải lên) |
+| Sửa một phần dữ liệu | Có, ghi đè từng block, latency thấp | Có | Thường không sửa tại chỗ được: muốn đổi phải ghi lại cả object (multipart upload chỉ giúp **tải lên** object lớn theo từng phần) |
 | Khả năng mở rộng | Giới hạn theo kích thước volume | Lớn | Gần như không giới hạn, chi phí thấp mỗi GB |
 | Ví dụ (AWS) | Amazon EBS | Amazon EFS, FSx | Amazon S3 |
 | Dùng cho | Database, ổ hệ điều hành, ứng dụng cần I/O nhanh | Thư mục dùng chung, ứng dụng cũ cần file system chung | Ảnh, video, file upload, backup, log, data lake, nội dung tĩnh cho CDN |
@@ -92,7 +92,7 @@ flowchart LR
 
 ### Câu hỏi đào sâu
 
-- Vì sao không chạy database trên object storage?
+- Vì sao database OLTP truyền thống như PostgreSQL đặt dữ liệu trên block storage chứ không trên object storage? (Gợi ý: ghi ngẫu nhiên từng trang nhỏ, `fsync`, latency mỗi thao tác.)
 - Người dùng tải ảnh lên chậm và làm application server quá tải. Bạn thiết kế lại luồng upload thế nào?
 
 ## Tự đánh giá

@@ -72,7 +72,9 @@ sequenceDiagram
 
 Phép `insert_if_absent` phải nguyên tử (ví dụ unique constraint trong database), nếu không hai request đồng thời cùng key vẫn có thể cùng được xử lý.
 
-**Các tình huống thực tế để kể:** API thanh toán; consumer đọc message queue (đa số queue đảm bảo *at-least-once*, nên consumer phải xử lý trùng message); webhook từ bên thứ ba có thể gửi lại cùng một sự kiện; job định kỳ chạy lại sau khi crash.
+Pseudocode trên chỉ là khung tối thiểu. Một cài đặt thật còn phải xử lý: `process` thất bại hoặc instance crash giữa chừng (bản ghi kẹt ở `processing` mãi, mọi lần retry đều nhận `409`; cần xóa hoặc đánh dấu `failed` khi lỗi, và cho bản ghi `processing` hết hạn sau một khoảng thời gian); và trường hợp thao tác đã có tác dụng phụ (đã trừ tiền ở đối tác) nhưng chưa kịp lưu kết quả, khi đó phải truy vấn lại trạng thái ở đối tác thay vì xử lý lại.
+
+**Các tình huống thực tế để kể:** API thanh toán; consumer đọc message queue (nhiều message queue phổ biến mặc định giao *at-least-once*, nên consumer phải xử lý được message trùng); webhook từ bên thứ ba có thể gửi lại cùng một sự kiện; job định kỳ chạy lại sau khi crash.
 
 ### Trade-off
 
@@ -161,7 +163,7 @@ Bạn có hiểu vấn đề mà orchestration giải quyết (chạy nhiều co
 
 ### Trả lời gợi ý
 
-**Docker Compose** định nghĩa và chạy một ứng dụng nhiều container bằng một file YAML. Nó rất tốt cho môi trường phát triển, test và các triển khai nhỏ, nhưng mặc định chạy trên **một Docker host**.
+**Docker Compose** định nghĩa và chạy một ứng dụng nhiều container bằng một file YAML. Nó rất tốt cho môi trường phát triển, test và các triển khai nhỏ. Compose cũng có restart policy và healthcheck, nhưng chỉ trong phạm vi **một Docker host**: máy đó chết thì toàn bộ ứng dụng chết theo, và không có cơ chế đặt container sang máy khác.
 
 **Kubernetes** là hệ thống orchestration cho **một cụm nhiều máy (cluster)**. Bạn khai báo **trạng thái mong muốn** (desired state), và các controller liên tục so sánh với trạng thái thực tế để điều chỉnh (reconciliation):
 
