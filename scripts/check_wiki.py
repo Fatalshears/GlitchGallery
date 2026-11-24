@@ -24,7 +24,11 @@ REQUIRED_SECTIONS = {
                 "## Architecture sketch", "## Build it yourself", "## References"],
     "cookbook": ["## References"],
     "blueprint": ["## Milestone map", "## Reference implementation", "## Self-assessment"],
+    # Vietnamese-language study guides (content/ai-era/).
+    "guide": ["## Mục tiêu", "## Tự đánh giá", "## Tài liệu tham khảo"],
 }
+# "Used for" label of a code example; guide pages write it in Vietnamese.
+USED_FOR = ("**Used for:**", "**Dùng để:**")
 # Fenced blocks that are sample output or diagrams-as-text, not code examples.
 NO_DESCRIPTION_NEEDED = {"field-notes/claude-code-model-access-litellm.md"}
 
@@ -54,20 +58,21 @@ def main() -> int:
         needed = ["title"]
         if kind in REQUIRED_SECTIONS:
             needed += ["tags", "status"]
-        if kind in ("concept", "feature"):
+        if kind in ("concept", "feature", "guide"):
             needed += ["levels"]
         if kind == "cookbook":
             needed += ["versions"]
         problems += [f"{page}: front matter missing '{k}'" for k in needed if k not in meta]
         problems += [f"{page}: missing section {h!r}" for h in REQUIRED_SECTIONS.get(kind, []) if h not in text]
+        if kind in ("concept", "feature", "guide"):
+            for level in re.findall(r"\d", meta.get("levels", "")):
+                if f"[!level{level}]" not in text:
+                    problems.append(f"{page}: levels lists {level} but has no [!level{level}] callout")
         if kind in ("concept", "feature"):
             if "*Search keywords:*" not in text:
                 problems.append(f"{page}: no '*Search keywords:*' line")
             if "```mermaid" not in text:
                 problems.append(f"{page}: no diagram")
-            for level in re.findall(r"\d", meta.get("levels", "")):
-                if f"[!level{level}]" not in text:
-                    problems.append(f"{page}: levels lists {level} but has no [!level{level}] callout")
 
         for target in re.findall(r"\[\[([^\]|#\\]+)", strip_code(text)):
             target = target.strip()
@@ -88,7 +93,7 @@ def main() -> int:
             inside = True
             if m.group(2) == "mermaid" or page in NO_DESCRIPTION_NEEDED or page.endswith("contributing.md"):
                 continue
-            if not any("**Used for:**" in x for x in lines[max(0, i - 6):i]):
+            if not any(label in x for x in lines[max(0, i - 6):i] for label in USED_FOR):
                 problems.append(f"{page}:{i + 1}: code example without Used for / Input / Expected output")
 
     for page, (meta, _) in pages.items():

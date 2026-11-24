@@ -35,6 +35,8 @@ flowchart TB
 
 Plus [[field-notes/index|Field Notes]]: short write-ups of real bugs and odd failures met in practice.
 
+And [[ai-era/index|Kỹ sư phần mềm thời AI]] (in Vietnamese): problem solving, system design and trade-off thinking for developers working alongside AI coding assistants, also usable as interview preparation for Backend / Fullstack roles.
+
 ## Where to begin
 
 1. Read [[how-to-learn|How to learn with this wiki]] — the three competency levels and how to study without an AI assistant.
