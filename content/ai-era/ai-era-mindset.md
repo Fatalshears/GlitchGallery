@@ -55,6 +55,19 @@ Câu hỏi lý thuyết thuần túy ("4 tính chất của OOP là gì") có nh
 
 Hệ quả cho người chuẩn bị: với mỗi khái niệm trong section này, hãy tìm **một tình huống cụ thể trong dự án bạn đã làm** nơi khái niệm đó xuất hiện (hoặc lẽ ra nên xuất hiện).
 
+### Khác biệt theo nhánh
+
+Tinh thần "hỏi khái niệm và trade-off thay vì cú pháp" áp dụng cho mọi nhánh, chỉ khác ở **loại lỗi** mà người hỏi quan tâm:
+
+| Nhánh | Người hỏi muốn thấy bạn hiểu | Trang |
+|---|---|---|
+| Web / Backend / Cloud | Lỗi mạng, retry, nhất quán dữ liệu, scale khi tải tăng | [[backend-engineering-basics]], [[system-design-basics]] |
+| Embedded / Firmware | Ràng buộc thời gian thực, tài nguyên rất hạn chế, phần cứng, chạy nhiều năm không khởi động lại | [[embedded-firmware-topics]] |
+| IoT | Kết nối chập chờn, cập nhật từ xa không làm hỏng thiết bị, bảo mật cho số lượng lớn thiết bị | [[iot-systems-topics]] |
+| Desktop, công cụ Windows | Môi trường máy người dùng không kiểm soát được, giao diện không treo, quyền hệ điều hành, chẩn đoán lỗi từ xa | [[windows-desktop-tools-topics]] |
+
+Với embedded, nguồn chính thống quan trọng nhất là datasheet và reference manual của chip; với Windows là tài liệu Microsoft Learn của đúng API.
+
 ### Khác biệt theo level
 
 ```mermaid

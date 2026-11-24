@@ -64,6 +64,9 @@ AI có thể nói tự tin về những điều sai: API không tồn tại, c�
 | Dịch vụ cloud, giới hạn, giá | Tài liệu chính thức của nhà cung cấp (AWS, Azure, Google Cloud) |
 | Pattern kiến trúc (retry, circuit breaker, saga) | Azure Architecture Center, AWS Builders' Library, Google SRE book |
 | API của ngôn ngữ, thư viện | Tài liệu chính thức của ngôn ngữ hoặc thư viện, đúng phiên bản bạn dùng |
+| Thanh ghi, ngoại vi, timing của vi điều khiển | Datasheet, reference manual và errata của đúng con chip; tài liệu RTOS |
+| Giao thức IoT | Đặc tả MQTT (OASIS), RFC 7252 (CoAP), tài liệu nền tảng IoT của nhà cung cấp |
+| API Windows, hành vi của hệ điều hành | Microsoft Learn (Win32, .NET) |
 
 ### 4. Chấm điểm theo tiêu chí
 
@@ -90,6 +93,9 @@ Viết ngắn: bối cảnh, các phương án đã cân nhắc, phương án ch
 - Giữ state (session, file upload) trong bộ nhớ của một instance rồi đặt sau load balancer nhiều instance.
 - Dùng **distributed transaction** khi có thể thiết kế lại ranh giới dữ liệu để tránh nó.
 - Gọi API hoặc tham số cấu hình mà bạn không tìm thấy trong tài liệu chính thức.
+- Embedded: `malloc` hoặc `printf` trong ISR, thiếu `volatile` hay critical section, tên thanh ghi không có trong reference manual. Xem [[embedded-firmware-topics]].
+- IoT: tắt kiểm tra chứng chỉ TLS, reconnect liên tục không backoff, OTA không có rollback. Xem [[iot-systems-topics]].
+- Windows desktop: I/O đồng bộ trên UI thread, ghi file vào `Program Files`, đòi quyền admin không cần thiết. Xem [[windows-desktop-tools-topics]].
 
 ## Bài luyện tập
 
@@ -100,6 +106,9 @@ Mỗi bài: tự viết ràng buộc, chạy prompt ở bước 2, kiểm chứn
 3. Hệ thống chậm hẳn mỗi khi có chương trình khuyến mãi. Bắt đầu điều tra từ đâu? Xem [[system-design-basics]].
 4. Một quy trình đặt hàng cập nhật ba service: Order, Payment, Inventory. Đảm bảo tính nhất quán thế nào? Xem [[senior-engineering-topics]].
 5. Ứng dụng cần lưu 10 TB ảnh người dùng upload và một database PostgreSQL. Chọn loại storage nào cho từng thứ? Xem [[cloud-networking-and-storage]].
+6. Thiết bị đo đọc cảm biến mỗi 1 ms, gửi dữ liệu qua UART và thỉnh thoảng mất mẫu. Superloop hay RTOS, xử lý trong ISR hay task? Xem [[embedded-firmware-topics]].
+7. 20.000 thiết bị cần cập nhật firmware qua mạng di động không ổn định, không được để thiết bị nào hỏng. Thiết kế quy trình OTA. Xem [[iot-systems-topics]].
+8. Công cụ Windows nội bộ bị treo khi xuất báo cáo lớn và đòi quyền admin mỗi lần mở. Thiết kế lại thế nào? Xem [[windows-desktop-tools-topics]].
 
 ## Tự đánh giá
 
