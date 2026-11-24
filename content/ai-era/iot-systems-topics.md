@@ -36,8 +36,8 @@ Bạn hiểu mô hình publish/subscribe qua broker, và chọn được mức �
 | QoS | Đảm bảo | Cơ chế | Khi nào dùng |
 |---|---|---|---|
 | 0 | At most once: có thể mất | Gửi một lần, không xác nhận | Telemetry gửi dày đặc, mất một mẫu không sao |
-| 1 | At least once: có thể trùng | Gửi lại đến khi nhận `PUBACK` | Mặc định hợp lý cho sự kiện quan trọng; bên nhận phải xử lý trùng (idempotent) |
-| 2 | Exactly once | Bắt tay bốn bước (`PUBREC`, `PUBREL`, `PUBCOMP`) | Ít dùng: tốn băng thông, độ trễ cao; thường thay bằng QoS 1 + khử trùng ở ứng dụng |
+| 1 | At least once: có thể trùng | Bên gửi giữ message đến khi nhận `PUBACK`; nếu mất kết nối trước đó thì gửi lại khi kết nối lại | Mặc định hợp lý cho sự kiện quan trọng; bên nhận phải xử lý trùng (idempotent) |
+| 2 | Exactly once | Bắt tay bốn gói (`PUBLISH`, `PUBREC`, `PUBREL`, `PUBCOMP`) | Ít dùng: tốn băng thông, độ trễ cao; thường thay bằng QoS 1 + khử trùng ở ứng dụng |
 
 Lưu ý: QoS áp dụng **từng chặng** (publisher → broker, broker → subscriber). Mức QoS subscriber nhận được bị giới hạn bởi mức QoS mà nó đăng ký, nên "exactly once" không tự động đúng từ đầu đến cuối.
 
@@ -45,7 +45,7 @@ Lưu ý: QoS áp dụng **từng chặng** (publisher → broker, broker → sub
 
 - **Retained message:** broker giữ message retained cuối cùng của một topic và gửi ngay cho subscriber mới. Dùng cho trạng thái hiện tại (ví dụ `device/42/status`).
 - **Last Will and Testament:** thiết bị đăng ký trước một message; broker tự publish nó khi thiết bị **mất kết nối bất thường** (hết keep alive). Dùng để báo thiết bị offline.
-- **Keep Alive:** khoảng thời gian tối đa giữa hai gói tin; giúp phát hiện kết nối chết qua NAT hoặc mạng di động.
+- **Keep Alive:** khoảng thời gian tối đa giữa hai gói tin client gửi (không có dữ liệu thì gửi `PINGREQ`); broker ngắt kết nối nếu quá 1,5 lần khoảng này mà không nhận được gì. Giúp phát hiện kết nối chết qua NAT hoặc mạng di động.
 - **Persistent session** (MQTT 5: `Clean Start` = 0 kèm `Session Expiry Interval`): broker giữ subscription và message QoS 1/2 chưa giao trong lúc thiết bị offline.
 
 **Lựa chọn khác:** CoAP (RFC 7252) chạy trên UDP, kiểu REST, hợp cho thiết bị rất hạn chế tài nguyên; HTTPS hợp với thiết bị gửi dữ liệu thưa và không cần nhận lệnh tức thời.

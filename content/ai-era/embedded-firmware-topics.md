@@ -73,7 +73,7 @@ sequenceDiagram
 > [!pseudocode] Chuyển việc từ ISR sang task với FreeRTOS (C)
 > - **Dùng để:** minh họa ISR chỉ lấy dữ liệu và báo hiệu, còn task làm phần xử lý.
 > - **Đầu vào:** một UART phát interrupt khi nhận byte; `rx_sem` là binary semaphore đã tạo; `uart_read_data_register()` là hàm đọc thanh ghi theo reference manual của chip.
-> - **Kết quả mong đợi:** ISR thoát trong vài micro giây; task `rx_task` được đánh thức và xử lý byte, không mất dữ liệu khi task đang bận nhờ ring buffer.
+> - **Kết quả mong đợi:** ISR thoát trong vài micro giây; task `rx_task` được đánh thức và xử lý hết byte trong buffer. Không mất byte khi task đang bận, **miễn là** ring buffer đủ chứa lượng dữ liệu đến trong thời gian task bận lâu nhất; khi buffer đầy, `ring_buffer_put` bỏ byte và firmware nên đếm số byte bị bỏ để phát hiện.
 >
 > ```c
 > void UART_IRQHandler(void) {
@@ -125,7 +125,7 @@ sequenceDiagram
   L->>R: lấy mutex
   H->>R: muốn lấy mutex, bị chặn
   M->>M: sẵn sàng, chiếm CPU (L không chạy được)
-  Note over H: H chờ vô hạn vì M,<br/>dù M ưu tiên thấp hơn H
+  Note over H: H bị chặn trong thời gian không xác định trước,<br/>phụ thuộc M, dù M ưu tiên thấp hơn H
   Note over L,H: Với priority inheritance: L tạm được nâng lên mức ưu tiên của H,<br/>chạy trước M, nhả mutex, H chạy tiếp
 ```
 
@@ -135,7 +135,7 @@ sequenceDiagram
 - **Priority ceiling:** mutex được gán mức ưu tiên trần; ai giữ nó thì chạy ở mức đó.
 - **Thiết kế:** giữ mutex trong thời gian ngắn nhất, tránh chia sẻ tài nguyên giữa các task có độ ưu tiên chênh lệch lớn, hoặc giao tài nguyên cho một task duy nhất và giao tiếp qua queue.
 
-**Ví dụ thật:** năm 1997, tàu Mars Pathfinder liên tục tự reset trên sao Hỏa. Nguyên nhân là priority inversion giữa task quản lý bus (ưu tiên cao), task thu dữ liệu khí tượng (ưu tiên thấp, giữ mutex) và task truyền thông (ưu tiên trung bình). Đội JPL khắc phục bằng cách bật priority inheritance cho mutex đó qua một bản cập nhật gửi từ Trái Đất.
+**Ví dụ thật:** năm 1997, tàu Mars Pathfinder nhiều lần tự reset toàn hệ thống trên sao Hỏa. Nguyên nhân là priority inversion giữa task quản lý bus (ưu tiên cao), task thu dữ liệu khí tượng (ưu tiên thấp, giữ mutex) và task truyền thông (ưu tiên trung bình). Đội JPL khắc phục bằng cách bật priority inheritance cho mutex đó qua một bản cập nhật gửi từ Trái Đất.
 
 ### Câu hỏi đào sâu
 
@@ -173,7 +173,7 @@ Bạn có thiết kế firmware để chạy ổn định nhiều tháng, nhiề
 |---|---|---|---|---|
 | Đồng bộ clock | Không (hai bên thống nhất baud rate) | Có, master phát clock | Có, master phát clock | Không có dây clock riêng; các node đồng bộ theo bit rate cấu hình chung |
 | Số dây chính | TX, RX (và GND) | SCLK, MOSI, MISO, CS cho mỗi thiết bị | SDA, SCL (cần điện trở kéo lên) | CAN_H, CAN_L (vi sai) |
-| Topology | Điểm-điểm | Một master, nhiều slave chọn bằng CS | Bus nhiều thiết bị, chọn bằng địa chỉ | Bus nhiều node, multi-master |
+| Topology | Thường là điểm-điểm (RS-485 cho phép nhiều thiết bị) | Một master, nhiều slave chọn bằng CS | Bus nhiều thiết bị, chọn bằng địa chỉ | Bus nhiều node, multi-master |
 | Tốc độ | Thấp đến trung bình | Cao nhất trong nhóm, full-duplex | Thấp đến trung bình | Trung bình; chống nhiễu tốt |
 | Dùng cho | Debug console, module GPS, modem | Flash, màn hình, ADC tốc độ cao | Cảm biến, EEPROM, chip quản lý nguồn | Ô tô, công nghiệp; xem [[can-bus]] |
 

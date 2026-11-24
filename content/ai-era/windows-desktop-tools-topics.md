@@ -42,7 +42,7 @@ sequenceDiagram
 > [!pseudocode] Đưa việc nặng ra khỏi UI thread (C#, WinForms)
 > - **Dùng để:** minh họa event handler không chặn UI thread và cập nhật control đúng thread.
 > - **Đầu vào:** một form có `exportButton`, `statusLabel`; `_cts` là `CancellationTokenSource` mà nút Hủy gọi `Cancel()`; `BuildReport` là hàm tốn vài giây, kiểm tra token định kỳ.
-> - **Kết quả mong đợi:** trong lúc tạo báo cáo, cửa sổ vẫn kéo được và không hiện "(Not Responding)"; xong thì `statusLabel` hiện tên file; lỗi được hiển thị thay vì làm sập ứng dụng.
+> - **Kết quả mong đợi:** trong lúc tạo báo cáo, cửa sổ vẫn kéo được và không hiện "(Not Responding)"; xong thì `statusLabel` hiện tên file; lỗi I/O và việc hủy được hiển thị thay vì làm sập ứng dụng (exception loại khác vẫn cần một handler toàn cục, vì exception thoát khỏi `async void` làm sập process).
 >
 > ```csharp
 > private async void exportButton_Click(object sender, EventArgs e)
@@ -126,7 +126,7 @@ flowchart LR
 
 ### Trả lời gợi ý
 
-- **UAC:** kể cả tài khoản admin, ứng dụng mặc định chạy với token quyền thường. Manifest khai báo `requestedExecutionLevel`: `asInvoker` (mặc định nên dùng), `highestAvailable`, `requireAdministrator`. Ứng dụng đòi admin cho mọi lần chạy chỉ để làm một việc nhỏ là thiết kế kém: hãy tách việc cần quyền cao thành một helper riêng hoặc một service, và chỉ nâng quyền khi thật cần.
+- **UAC:** khi UAC bật (mặc định), kể cả người dùng thuộc nhóm Administrators cũng chạy ứng dụng với token quyền thường, trừ khi được nâng quyền. Manifest khai báo `requestedExecutionLevel`: `asInvoker` (mặc định nên dùng), `highestAvailable`, `requireAdministrator`. Ứng dụng đòi admin cho mọi lần chạy chỉ để làm một việc nhỏ là thiết kế kém: hãy tách việc cần quyền cao thành một helper riêng hoặc một service, và chỉ nâng quyền khi thật cần.
 - **Bộ cài:** MSI (Windows Installer) phổ biến trong doanh nghiệp, triển khai được qua công cụ quản trị; MSIX đóng gói theo kiểu container, gỡ cài sạch và hỗ trợ cập nhật tự động. Bộ cài cần hỗ trợ nâng cấp, gỡ cài sạch, và cài không giao diện (silent install) cho quản trị viên.
 - **Ký số (code signing):** ký file thực thi và bộ cài bằng chứng chỉ code signing (SignTool). File không ký thường bị SmartScreen cảnh báo, và bị chính sách bảo mật của doanh nghiệp chặn.
 - **Cập nhật:** cơ chế tự cập nhật phải tải bản đã ký qua HTTPS, kiểm tra chữ ký trước khi chạy, và không làm hỏng bản đang dùng nếu cập nhật thất bại.
