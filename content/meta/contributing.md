@@ -16,6 +16,7 @@ content/              wiki pages (Markdown, Obsidian-flavoured)
   cookbook/<lang>/    Implementation Cookbook (python, typescript, cpp, ...)
   blueprints/         Project Blueprints
   field-notes/        Troubleshooting write-ups
+  ai-era/             Kỹ sư phần mềm thời AI: Vietnamese study and interview guides
   meta/               How-to, glossary, roadmap, this page
 examples/             Runnable code referenced by [!tested] callouts (CI-tested)
 site/                 Quartz config, layout and theme (Everforest)
@@ -58,7 +59,7 @@ python3 scripts/check_wiki.py
 ```yaml
 ---
 title: HTTP Range Requests        # human title
-type: concept                      # product | feature | concept | cookbook | blueprint | field-note | hub | meta
+type: concept                      # product | feature | concept | cookbook | blueprint | field-note | guide | hub | meta
 domain: networking                 # concepts only
 tags: [http, networking]
 aliases: [byte serving, partial content]   # alternative names; also improves search
@@ -126,6 +127,10 @@ Language choice: prefer **Python**, then **TypeScript**, then **C++**, as long a
 ## Diagrams
 
 Use Mermaid (`flowchart`, `sequenceDiagram`, `stateDiagram-v2`, `classDiagram`, `erDiagram`). Every concept page should have at least one. Prefer diagrams that show a mechanism (who sends what, in which order) over decorative boxes.
+
+## Guides (ai-era)
+
+Pages in `content/ai-era/` are written in **Vietnamese**, keeping common technical terms in English. They use `type: guide` and need `tags`, `status` and `levels` in front matter, plus three sections: **## Mục tiêu** (goal), **## Tự đánh giá** (self-assessment, with a `[!levelN]` callout for each listed level) and **## Tài liệu tham khảo** (references). Each question follows the same shape: what the interviewer checks, a suggested answer, trade-offs, common mistakes, follow-up questions. Answers must be backed by official or authoritative sources (RFCs, vendor documentation, the Google SRE book, Azure Architecture Center, AWS Builders' Library), listed under references. Code examples use the Vietnamese labels **Dùng để:** / **Đầu vào:** / **Kết quả mong đợi:**.
 
 ## Field notes
 
