@@ -9,11 +9,13 @@ Khi AI viết được phần lớn code, việc gõ code trực tiếp không c
 
 Section này dùng cho hai mục đích:
 
-1. **Củng cố kiến thức nền** cho developer làm việc cùng AI coding assistant: những khái niệm backend, system design và cloud mà bạn phải tự nắm để kiểm chứng code AI sinh ra.
-2. **Chuẩn bị phỏng vấn** Backend / Fullstack Developer khi nhà tuyển dụng không còn hỏi sâu về ngôn ngữ hay framework, mà hỏi về khái niệm, tình huống thực tế và trade-off.
+1. **Củng cố kiến thức nền** cho developer làm việc cùng AI coding assistant: những khái niệm mà bạn phải tự nắm để kiểm chứng code AI sinh ra.
+2. **Chuẩn bị phỏng vấn** khi nhà tuyển dụng không còn hỏi sâu về ngôn ngữ hay framework, mà hỏi về khái niệm, tình huống thực tế và trade-off.
+
+Nội dung chia theo **nhánh**: phần chung cho mọi kỹ sư, nhánh **Web / Backend / Cloud**, nhánh **Embedded / IoT**, và nhánh **phần mềm desktop, công cụ trên Windows**. Hãy đọc phần chung trước, rồi nhánh gần với công việc của bạn.
 
 > [!info] Nguồn nội dung
-> Danh sách câu hỏi được tổng hợp từ chia sẻ cộng đồng về cách phỏng vấn Fullstack Developer hiện nay. Mọi câu trả lời gợi ý đều dựa trên tài liệu chính thống (RFC, tài liệu chính thức của Kubernetes, AWS, Microsoft Azure, Google SRE, MDN, Oracle, Python) và được liệt kê ở cuối mỗi trang.
+> Danh sách câu hỏi nhánh Web được tổng hợp từ chia sẻ cộng đồng về cách phỏng vấn Fullstack Developer hiện nay; các nhánh Embedded, IoT và Windows được xây dựng theo cùng tinh thần. Mọi câu trả lời gợi ý đều dựa trên tài liệu chính thống (RFC, tài liệu chính thức của Kubernetes, AWS, Microsoft Azure, Google SRE, MDN, Oracle, Python) và được liệt kê ở cuối mỗi trang.
 
 ## Bản đồ section
 
@@ -27,23 +29,40 @@ flowchart TB
   CL["Cloud Basic<br/><i>subnet, object/block/file storage</i>"]
   SR["Chủ đề Senior / Tech Lead<br/><i>stateful, distributed transaction, retry/timeout, 503</i>"]
   OOP["OOP và câu hỏi nền tảng"]
+  EM["Embedded / Firmware<br/><i>RTOS, ISR, priority inversion, watchdog, bus</i>"]
+  IOT["IoT<br/><i>MQTT, offline, OTA, bảo mật thiết bị</i>"]
+  WIN["Công cụ trên Windows<br/><i>UI thread, service, file system, UAC, crash dump</i>"]
   M --> E
-  M --> B1 --> B2 --> SD --> SR
-  B1 --> CL --> SD
   M --> OOP
-  E -. "áp dụng cho mọi chủ đề" .-> SR
+  subgraph WEB["Nhánh Web / Backend / Cloud"]
+    B1 --> B2 --> SD --> SR
+    B1 --> CL --> SD
+  end
+  subgraph EMB["Nhánh Embedded / IoT"]
+    EM --> IOT
+  end
+  subgraph DESK["Nhánh Desktop"]
+    WIN
+  end
+  M --> B1
+  M --> EM
+  M --> WIN
+  B2 -. "idempotency, retry" .-> IOT
 ```
 
-| Trang | Dành cho | Trả lời câu hỏi |
+| Trang | Nhánh, level | Trả lời câu hỏi |
 |---|---|---|
-| [[ai-era-mindset\|Tư duy kỹ sư thời AI]] | Mọi level | Khi AI viết code, kỹ sư cần giỏi điều gì? Phỏng vấn đang thay đổi ra sao? |
-| [[evaluating-ai-solutions\|Đánh giá giải pháp AI đề xuất]] | Mọi level | Làm sao kiểm chứng và chọn giữa các giải pháp AI đưa ra? |
-| [[backend-engineering-basics\|Backend Engineering Concepts]] | Junior, Middle | Sync/Async, Polling/Push, request đi qua những layer nào, Reverse/Forward Proxy |
-| [[backend-development-topics\|Backend Development]] | Junior, Middle | Idempotency, Microservices vs Monolith, Circuit Breaker, container orchestration |
-| [[system-design-basics\|System Design Concepts]] | Middle | Resiliency, High Availability, Scalability; scale ngang/dọc; xử lý traffic tăng đột biến |
-| [[cloud-networking-and-storage\|Cloud Basic]] | Junior, Middle | Public/Private Subnet; Object, Block, File Storage |
-| [[senior-engineering-topics\|Chủ đề Senior / Tech Lead]] | Senior | Stateful vs Stateless workload, distributed transaction, retry và timeout, vòng đời workload K8s và sự cố 503 |
-| [[oop-fundamentals\|OOP và câu hỏi nền tảng]] | Junior | 4 tính chất OOP trả lời theo hướng ứng dụng thực tế |
+| [[ai-era-mindset\|Tư duy kỹ sư thời AI]] | Chung, mọi level | Khi AI viết code, kỹ sư cần giỏi điều gì? Phỏng vấn đang thay đổi ra sao? |
+| [[evaluating-ai-solutions\|Đánh giá giải pháp AI đề xuất]] | Chung, mọi level | Làm sao kiểm chứng và chọn giữa các giải pháp AI đưa ra? |
+| [[backend-engineering-basics\|Backend Engineering Concepts]] | Web; Junior, Middle | Sync/Async, Polling/Push, request đi qua những layer nào, Reverse/Forward Proxy |
+| [[backend-development-topics\|Backend Development]] | Web; Junior, Middle | Idempotency, Microservices vs Monolith, Circuit Breaker, container orchestration |
+| [[system-design-basics\|System Design Concepts]] | Web; Middle | Resiliency, High Availability, Scalability; scale ngang/dọc; xử lý traffic tăng đột biến |
+| [[cloud-networking-and-storage\|Cloud Basic]] | Web; Junior, Middle | Public/Private Subnet; Object, Block, File Storage |
+| [[senior-engineering-topics\|Chủ đề Senior / Tech Lead]] | Web; Senior | Stateful vs Stateless workload, distributed transaction, retry và timeout, vòng đời workload K8s và sự cố 503 |
+| [[oop-fundamentals\|OOP và câu hỏi nền tảng]] | Chung; Junior | 4 tính chất OOP trả lời theo hướng ứng dụng thực tế |
+| [[embedded-firmware-topics\|Embedded và Firmware]] | Embedded; Junior đến Senior | Superloop hay RTOS, viết ISR đúng, priority inversion, bộ nhớ và watchdog, UART/SPI/I2C/CAN |
+| [[iot-systems-topics\|IoT]] | IoT; Middle, Senior | MQTT và QoS, thiết bị mất kết nối, OTA an toàn, bảo mật đội thiết bị, device shadow |
+| [[windows-desktop-tools-topics\|Phần mềm công cụ trên Windows]] | Desktop; Junior đến Senior | "Not Responding" và UI thread, service và IPC, lỗi file system, UAC và phân phối, chẩn đoán crash |
 
 ## Cách học với section này
 
